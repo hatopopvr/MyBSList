@@ -99,7 +99,7 @@ batをランチャー等に登録しておき、ランチャーから都度呼�
 
 ## ライセンス
 
-このソフトウェアは、[MITライセンス](https://github.com/hatopopvr/BSRankedPlaylistDownloader/blob/main/LICENSE)のもとで公開されています。
+このソフトウェアは、[MITライセンス](https://github.com/hatopopvr/MyBSList/blob/main/LICENSE)のもとで公開されています。
 
 ## 連絡先
 Twitter [@hatopop_vr](https://twitter.com/hatopop_vr)
