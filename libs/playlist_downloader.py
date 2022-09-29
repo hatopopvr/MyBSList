@@ -16,6 +16,7 @@ import json
 from logging import getLogger
 from logging.config import dictConfig
 
+
 class PlaylistDownloader:
     """ Apluluさん(@aplulu_cat)作成のranked_all.zip をダウンロードし、playlistフォルダに展開するクラスです
 
@@ -29,7 +30,7 @@ class PlaylistDownloader:
         """ 一連の処理を実行します。
         """
         # "https://github.com/aplulu/bs-ranked-playlist/releases/latest/download/ranked_all.zip"
-        self.url = config['param']['url'] 
+        self.url = config['param']['url']
         # BeatSaber Playlistsのディレクトリ
         self.playlist_dir = config['param']['playlist_dir']
         # 作業ディレクトリ
@@ -66,22 +67,22 @@ class PlaylistDownloader:
         log_file = os.path.join(self.log_dir, 'log_{}.log'.format(
             datetime.now().strftime('%Y%m%d')))
 
-
         self.logger = getLogger(__name__)
         self.logger.setLevel(INFO)
 
         handler1 = StreamHandler()
-        handler1.setFormatter(Formatter("%(asctime)s - %(levelname)8s - %(message)s"))
+        handler1.setFormatter(
+            Formatter("%(asctime)s - %(levelname)8s - %(message)s"))
 
-        #handler2を作成
-        handler2 = FileHandler(filename=log_file)  #handler2はファイル出力
-        #handler2.setLevel(INFO)     #handler2はLevel.WARN以上
-        handler2.setFormatter(Formatter("%(asctime)s - %(levelname)8s - %(message)s"))
+        # handler2を作成
+        handler2 = FileHandler(filename=log_file)  # handler2はファイル出力
+        # handler2.setLevel(INFO)     #handler2はLevel.WARN以上
+        handler2.setFormatter(
+            Formatter("%(asctime)s - %(levelname)8s - %(message)s"))
 
-        #loggerに2つのハンドラを設定
+        # loggerに2つのハンドラを設定
         self.logger.addHandler(handler1)
         self.logger.addHandler(handler2)
-
 
     def download(self, url, download_dir):
         """ playlist ranked_all.zip をダウンロードします。
@@ -109,7 +110,8 @@ class PlaylistDownloader:
     def copy_to_playlist(self, input_dir, playlist_dir):
         """ 解凍したranked_all をplaylistフォルダに展開し上書きします。
         """
-        self.logger.info("PlaylistsディレクトリにPlaylistを配置します。")
+        self.logger.info(
+            "Copy and paste the playlists into the playlists directory.")
         files = os.listdir(input_dir)
         self.logger.debug("処理対象は {} 件です。".format(len(files)))
         count = 0
@@ -119,7 +121,7 @@ class PlaylistDownloader:
             count += 1
 
         self.logger.info(
-            "{} 件のplaylistの配置が完了しました。:{}".format(count, playlist_dir))
+            "{} playlists have been completed.:{}".format(count, playlist_dir))
 
     def create(self):
         """ 作業ディレクトリを作成します。
