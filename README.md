@@ -54,43 +54,40 @@ filtered_rank_max = 999999
 実行すると、consoleに以下のような内容が出力されておれば、正常に完了しています。
 
 ```
-D:\PythonProgram\MyBSTasks>python MyBSList.py
-2022-09-29 18:55:23,522 -     INFO - ---------------------------------
-2022-09-29 18:55:23,522 -     INFO - 作業を開始します.
-2022-09-29 18:55:23,523 -     INFO - 作業ディレクトリを作成します.
-2022-09-29 18:55:23,523 -     INFO - 作業ディレクトリの作成が完了しました. path:work
-2022-09-29 18:55:23,523 -     INFO - プレイヤー情報を取得します.
-2022-09-29 18:55:24,055 -     INFO - Player情報の取得が完了しました. hatopop, 総プレイ数:3,064, ランク譜面プレイ数:2,830, ページ数:32
-2022-09-29 18:55:24,055 -     INFO - ランク譜面のデータを取得します.
-2022-09-29 18:55:27,139 -     INFO - ランク譜面のデータ取得が完了しました. path:work\outcome.csv, count:3420
-2022-09-29 18:55:27,139 -     INFO - LeaderBoardからランク譜面数を照合します.
-2022-09-29 18:55:27,550 -     INFO - LeaderBoardのランク譜面数は 3,420 です.
-2022-09-29 18:55:27,552 -     INFO - ランク譜面数が一致しました.再取得処理を完了します.
-2022-09-29 18:55:27,553 -     INFO - PlayerのScore情報を取得します.
-2022-09-29 18:55:29,295 -     INFO - PlayerのScore情報を取得を完了しました. ランク譜面プレイ数は 2,830 です.
-2022-09-29 18:55:29,297 -     INFO - notes数とcombo数に基づきAccの再計算を開始します.
-2022-09-29 18:55:29,307 -     INFO - Accがゲームと異なる結果が42件あります.
-2022-09-29 18:55:29,308 -     INFO - Accを再計算した結果を上書きしました.
-2022-09-29 18:55:29,308 -     INFO - 結合データを作成します.
-2022-09-29 18:55:29,366 -     INFO - 結合が完了しました.件数:3,420
-2022-09-29 18:55:29,366 -     INFO - 作業ディレクトリのPlaylistを削除します.
-2022-09-29 18:55:29,367 -     INFO - 作業ディレクトリのPlaylist削除が完了しました. 10 件
-2022-09-29 18:55:29,368 -     INFO - 作業ディレクトリにPlaylist作成を開始します.
-2022-09-29 18:55:29,414 -     INFO - work/playlists/task_03.json Playlistを出力しました. 曲数:3
-2022-09-29 18:55:29,428 -     INFO - work/playlists/task_04.json Playlistを出力しました. 曲数:4
-2022-09-29 18:55:29,443 -     INFO - work/playlists/task_05.json Playlistを出力しました. 曲数:16
-2022-09-29 18:55:29,458 -     INFO - work/playlists/task_06.json Playlistを出力しました. 曲数:9
-2022-09-29 18:55:29,478 -     INFO - work/playlists/task_07.json Playlistを出力しました. 曲数:64
-2022-09-29 18:55:29,508 -     INFO - work/playlists/task_08.json Playlistを出力しました. 曲数:165
-2022-09-29 18:55:29,543 -     INFO - work/playlists/task_09.json Playlistを出力しました. 曲数:214
-2022-09-29 18:55:29,575 -     INFO - work/playlists/task_10.json Playlistを出力しました. 曲数:202
-2022-09-29 18:55:29,601 -     INFO - work/playlists/task_11.json Playlistを出力しました. 曲数:126
-2022-09-29 18:55:29,616 -     INFO - work/playlists/task_12.json Playlistを出力しました. 曲数:8
-2022-09-29 18:55:29,616 -     INFO - 作業ディレクトリにPlaylist作成を完了しました.
-2022-09-29 18:55:29,617 -     INFO - PlaylistsディレクトリにPlaylistを配置します。
-2022-09-29 18:55:29,658 -     INFO - 10 件のplaylistの配置が完了しました。:C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Playlists
-2022-09-29 18:55:29,658 -     INFO - 作業が完了しました.
-2022-09-29 18:55:29,659 -     INFO - ---------------------------------
+2022-09-29 22:22:42,230 -     INFO - -----------------[start]------------------
+2022-09-29 22:22:42,230 -     INFO - Creating working directory.
+2022-09-29 22:22:42,230 -     INFO - Work directory creation complete. path:work
+2022-09-29 22:22:42,231 -     INFO - Getting player information.
+2022-09-29 22:22:42,721 -     INFO - Retrieving player info. hatopop, TotalPlayCount:3,064, RankedPlayCount:2,830, Pages:32
+2022-09-29 22:22:42,721 -     INFO - Getting ranked map data.
+2022-09-29 22:22:44,951 -     INFO - Retrieving ranked map data completed. path:work\outcome.csv, count:3420
+2022-09-29 22:22:44,951 -     INFO - collating ranked map count from LeaderBoard.
+2022-09-29 22:22:45,379 -     INFO - ranked map count is 3,420.
+2022-09-29 22:22:45,382 -     INFO - Ranked map counts matched. Completing re-acquisition process.
+2022-09-29 22:22:45,382 -     INFO - Retrieving Player Score information from ScoreSaber.
+2022-09-29 22:22:47,389 -     INFO - Retrieving Player Score information completed. RankedPlayCount is 2,830.
+2022-09-29 22:22:47,390 -     INFO - Start recalculating Acc based on number of notes and combos.
+2022-09-29 22:22:47,399 -     INFO - There are 42 results where the Acc is different from the game.
+2022-09-29 22:22:47,400 -     INFO - Acc recalculated results overwritten.
+2022-09-29 22:22:47,400 -     INFO - creating combined data.
+2022-09-29 22:22:47,451 -     INFO - Merge complete. Count:3,420
+2022-09-29 22:22:47,455 -     INFO - delete playlist in working directory.
+2022-09-29 22:22:47,457 -     INFO - Playlist deletion in working directory complete. count:10
+2022-09-29 22:22:47,457 -     INFO - <<Playlist creation in working directory start.>>
+2022-09-29 22:22:47,499 -     INFO - Playlist: work/playlists/task_03.json, Count:3
+2022-09-29 22:22:47,521 -     INFO - Playlist: work/playlists/task_04.json, Count:4
+2022-09-29 22:22:47,537 -     INFO - Playlist: work/playlists/task_05.json, Count:16
+2022-09-29 22:22:47,552 -     INFO - Playlist: work/playlists/task_06.json, Count:9
+2022-09-29 22:22:47,571 -     INFO - Playlist: work/playlists/task_07.json, Count:64
+2022-09-29 22:22:47,598 -     INFO - Playlist: work/playlists/task_08.json, Count:165
+2022-09-29 22:22:47,629 -     INFO - Playlist: work/playlists/task_09.json, Count:214
+2022-09-29 22:22:47,659 -     INFO - Playlist: work/playlists/task_10.json, Count:202
+2022-09-29 22:22:47,683 -     INFO - Playlist: work/playlists/task_11.json, Count:126
+2022-09-29 22:22:47,697 -     INFO - Playlist: work/playlists/task_12.json, Count:8
+2022-09-29 22:22:47,698 -     INFO - <<Playlist creation in working directory complete.>>
+2022-09-29 22:22:47,698 -     INFO - Copy and paste the playlists into the playlists directory.
+2022-09-29 22:22:47,734 -     INFO - 10 playlists have been completed.:C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Playlists
+2022-09-29 22:22:47,735 -     INFO - ----------------[complete]-----------------
 ```
 
 ### 捕捉 
