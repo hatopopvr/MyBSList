@@ -1,6 +1,6 @@
 # MyBSList
 
-ScoreSaberから取得した内容と、星別のフィルタ条件に基づいて星別のプレイリストを作成するスクリプトです.
+ScoreSaberから取得した内容と、星別のフィルタ条件に基づいて星別のプレイリストを作成するツールです.
 
 ![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_001.jpg)
 
