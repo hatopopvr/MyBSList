@@ -1,9 +1,10 @@
-import libs.playlist_downloader as pl
+#import libs.playlist_downloader as pl
 from distutils.util import strtobool
 import configparser
 import base64
 import math
-import requests
+import json
+import urllib3
 from tqdm import tqdm
 from datetime import datetime
 import json
@@ -12,6 +13,7 @@ import pandas as pd
 import shutil
 import os
 import warnings
+from logging import getLogger, INFO, DEBUG, StreamHandler, FileHandler, Formatter
 warnings.filterwarnings("ignore")
 #from dateutil import tz
 
@@ -38,10 +40,23 @@ cols_playlist = ['Hash', 'SongName', 'SongAuthor', 'LevelAuthor', 'Difficulty', 
                  'PP', 'Rank', 'Modifiers', 'DateUtc', 'Date', 'Days', 'FC']
 
 
-class MyBSTasks(pl.PlaylistDownloader):
+# class MyBSTasks(pl.PlaylistDownloader):
+class MyBSTasks:
     def __init__(self, config):
-        super().__init__(config)
         self.config = config
+
+        # rankedmapdata_url: ランク譜面データのcsvのURLです.らっきょさんデータ.
+        self.rankedmapdata_url = config['param']['url']
+        # BeatSaber Playlistsのディレクトリ
+        self.playlist_dir = config['param']['playlist_dir']
+        # 作業ディレクトリ
+        self.work_dir = os.path.join(
+            config['param']['work_dir'], datetime.now().strftime('%Y%m%d%H%M%S'))
+        # 作業ディレクトリ削除フラグ
+        self.clean_flag = strtobool(config['param']['clean_flag'])
+        # logdir
+        self.log_dir = config['param']['log_dir']
+
         self.player_id = config['param']['player_id']
         self.latest = int(config['param']['latest'])
         self.page_count = int(config['param']['page_count'])
@@ -58,11 +73,7 @@ class MyBSTasks(pl.PlaylistDownloader):
         self.ss_plus = "SS+{}".format(self.ss_plus_val)
         self.ss_plus_rate = "SS+{}-Rate".format(self.ss_plus_val)
 
-        self.data_path = config['param']['work_dir']  # self.work_dir
-
-        # rankedmapdata_url: ランク譜面データのcsvのURLです.らっきょさんデータ.
-        # 'https://api.github.com/repos/rakkyo150/RankedMapData/releases'
-        self.rankedmapdata_url = config['param']['url']
+        self.data_path = config['param']['work_dir']
 
         # player情報の親フォルダ(data_pathの子フォルダ)
         self.player_path = r"{}/players_data/{}".format(
@@ -93,6 +104,31 @@ class MyBSTasks(pl.PlaylistDownloader):
         # タイムゾーンの設定
         self.tz_ja = pd.Timestamp(datetime.now()).tz_localize(
             'UTC').tz_convert('Asia/Tokyo')
+
+    def set_logger(self):
+        """ logger を作成します。
+        """
+        # loggerの取得
+        os.makedirs(self.log_dir, exist_ok=True)
+        log_file = os.path.join(self.log_dir, 'log_{}.log'.format(
+            datetime.now().strftime('%Y%m%d')))
+
+        self.logger = getLogger(__name__)
+        self.logger.setLevel(INFO)
+
+        handler1 = StreamHandler()
+        handler1.setFormatter(
+            Formatter("%(asctime)s - %(levelname)8s - %(message)s"))
+
+        # handler2を作成
+        handler2 = FileHandler(filename=log_file)  # handler2はファイル出力
+        # handler2.setLevel(INFO)     #handler2はLevel.WARN以上
+        handler2.setFormatter(
+            Formatter("%(asctime)s - %(levelname)8s - %(message)s"))
+
+        # loggerに2つのハンドラを設定
+        self.logger.addHandler(handler1)
+        self.logger.addHandler(handler2)
 
     def process(self):
         """ 一連の処理を実行します.
@@ -159,11 +195,14 @@ class MyBSTasks(pl.PlaylistDownloader):
             RangeCount : int
                 ScoreSaberのPage数です.
         """
+
         self.logger.info('Getting player information.')
         url = r"https://scoresaber.com/api/player/{}/full".format(
             self.player_id)
-        response = requests.get(url)
-        res_data = response.json()
+
+        http = urllib3.PoolManager()
+        r = http.request('GET', url)
+        res_data = json.loads(r.data.decode('utf-8'))
         _df_info = json_normalize(res_data)
 
         _df_info["TotalScore"] = _df_info["scoreStats.totalScore"]
@@ -197,20 +236,22 @@ class MyBSTasks(pl.PlaylistDownloader):
             'Accept': 'application/vnd.github.v3+json',
         }
 
-        response = requests.get(self.rankedmapdata_url, headers=headers)
-
-        data = response.json()
+        http = urllib3.PoolManager()
+        r = http.request('GET', self.rankedmapdata_url, headers=headers)
+        data = json.loads(r.data.decode('utf-8'))
 
         # 最新releaseのcsvのurl取得
         url_rankmap_data = data[0]["assets"][0]["browser_download_url"]
 
         file_name = os.path.join(
             self.data_path, os.path.basename(url_rankmap_data))
-        result = requests.get(url_rankmap_data, stream=True)
-        if result.status_code == 200:
-            with open(file_name, 'wb') as file:
-                result.raw.decode_content = True
-                shutil.copyfileobj(result.raw, file)
+
+        result = http.request('GET', url_rankmap_data, preload_content=False)
+
+        with open(file_name, 'wb') as out_file:
+            shutil.copyfileobj(result, out_file)
+
+        result.release_conn()
 
         df_rankmap_data = pd.read_csv(file_name)
         df_rankmap_data = df_rankmap_data[[
@@ -250,14 +291,17 @@ class MyBSTasks(pl.PlaylistDownloader):
         self.logger.info('collating ranked map count from LeaderBoard.')
 
         url = r"https://scoresaber.com/api/leaderboards?ranked=true&page=1&withMetadata=true"
-        response = requests.get(url)
-        total_count_from_leaderboard = response.json()['metadata']['total']
-        level_count_page = response.json()['metadata']['itemsPerPage']
+
+        http = urllib3.PoolManager()
+        response = http.request('GET', url)
+        res_data = json.loads(response.data.decode('utf-8'))
+        total_count_from_leaderboard = res_data['metadata']['total']
+        level_count_page = res_data['metadata']['itemsPerPage']
+
         scoresaber_ranked_page_count = math.ceil(
             total_count_from_leaderboard / level_count_page)
         self.logger.info("ranked map count is {:,}.".format(
             total_count_from_leaderboard))  # , scoresaber_ranked_page_count))
-        res_data = response.json()
         df_ranked_songs_from_leaderboard = json_normalize(
             res_data['leaderboards'])
 
@@ -268,8 +312,9 @@ class MyBSTasks(pl.PlaylistDownloader):
                 url = r"https://scoresaber.com/api/leaderboards?ranked=true&page={}".format(
                     i)
                 try:
-                    response = requests.get(url)
-                    res_data = response.json()
+                    http = urllib3.PoolManager()
+                    response = http.request('GET', url)
+                    res_data = json.loads(response.data.decode('utf-8'))
                     df_ranked_songs_from_leaderboard = df_ranked_songs_from_leaderboard.append(
                         json_normalize(res_data['leaderboards']), ignore_index=True)
                 except:
@@ -340,8 +385,11 @@ class MyBSTasks(pl.PlaylistDownloader):
                 url = r"https://scoresaber.com/api/player/{}/scores?sort=recent&page={}&limit={}".format(
                     self.player_id, i, self.page_count)
                 try:
-                    response = requests.get(url)
-                    res_data = response.json()
+                    http = urllib3.PoolManager()
+                    response = http.request('GET', url)
+                    res_data = json.loads(response.data.decode('utf-8'))
+                    # response = requests.get(url)
+                    # res_data = response.json()
                     _df_scores_pkl = _df_scores_pkl.append(
                         json_normalize(res_data['playerScores']), ignore_index=True)
                     if df_scores_pkl['score.timeSet'].max() > _df_scores_pkl['score.timeSet'].min():
@@ -355,16 +403,18 @@ class MyBSTasks(pl.PlaylistDownloader):
         else:
             url = r"https://scoresaber.com/api/player/{}/scores?sort=recent&limit={}".format(
                 self.player_id, self.page_count)
-            response = requests.get(url)
-            res_data = response.json()
+            http = urllib3.PoolManager()
+            response = http.request('GET', url)
+            res_data = json.loads(response.data.decode('utf-8'))
             _df_scores = json_normalize(res_data['playerScores'])
 
             for i in tqdm(range(2, _RangeCount)):
                 url = r"https://scoresaber.com/api/player/{}/scores?sort=recent&page={}&limit={}".format(
                     self.player_id, i, self.page_count)
                 try:
-                    response = requests.get(url)
-                    res_data = response.json()
+                    http = urllib3.PoolManager()
+                    response = http.request('GET', url)
+                    res_data = json.loads(response.data.decode('utf-8'))
                     _df_scores = _df_scores.append(json_normalize(
                         res_data['playerScores']), ignore_index=True)
                 except:
@@ -684,6 +734,22 @@ class MyBSTasks(pl.PlaylistDownloader):
         self.logger.info(
             'Playlist deletion in working directory complete. count:{:,} '.format(cnt))
         return
+
+    def copy_to_playlist(self, input_dir, playlist_dir):
+        """ 解凍したranked_all をplaylistフォルダに展開し上書きします。
+        """
+        self.logger.info(
+            "Copy and paste the playlists into the playlists directory.")
+        files = os.listdir(input_dir)
+        self.logger.debug("処理対象は {} 件です。".format(len(files)))
+        count = 0
+        for file in files:
+            input_file = os.path.join(input_dir, file)
+            shutil.copy2(input_file, playlist_dir)
+            count += 1
+
+        self.logger.info(
+            "{} playlists have been completed.:{}".format(count, playlist_dir))
 
     def func_mode(self, x):
         if x == "SoloStandard":
