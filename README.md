@@ -4,7 +4,7 @@ ScoreSaberから取得した内容と、星別のフィルタ条件に基づい�
 
 ![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_001.jpg)
 
-星毎に次のようなAccuracy以下の範囲の譜面のプレイリストを作成し、クリア埋めと散布図を綺麗にするのを支援します。
+星毎に次のようなAccuracy以下の範囲の譜面のプレイリストを作成し、クリア埋めと散布図を綺麗にするのを支援します。  
 例）★0:98、★1:96、★2:95、★3:93、★4:92、★5:91、★6:88、★7:85、★8:80以下のAccuracyの譜面を課題譜面としてそれぞれ抽出
 
 ![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_002.jpg)
