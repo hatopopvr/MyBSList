@@ -1,22 +1,24 @@
 # MyBSList
 
-ScoreSaberから取得した内容に基づいて星別のプレイリストを作成するスクリプトです.
+ScoreSaberから取得した内容と、星別のフィルタ条件に基づいて星別のプレイリストを作成するスクリプトです.
+
+![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_001.jpg)
+
+## 背景
+星毎に次のようなAccuracy以下の譜面のプレイリストを作成し、クリア埋めと散布図を綺麗するのを加速させる動機で作成しました。
+例)★0:98、★1:96、★2:95、★3:93、★4:92、★5:91、★6:88、★7:85、★8:80以下のAccuracyの譜面をそれぞれ抽出
 
 ![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_001.jpg)
 
 ## 適用範囲
 本プログラムは以下の環境でのみ動作を確認しています。
 - Windows 10 pro 64bit
-- Python 3.7.9
 
 ## 使い方
 
 ### 導入
 
-python導入済とします。
-```
-pip install -r requirements.txt
-```
+[release](https://github.com/hatopopvr/MyBSList/releases)から最新のzipをダウンロードし、任意の場所で解凍します.
 
 ### 設定
 
@@ -32,28 +34,43 @@ player_id = 76561198412839195
 playlist_dir = C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Playlists
 ```
 
-星毎に以下の条件を設定してください。
+星毎に作成したいプレイリストの内容に応じて以下の条件を設定してください。
+
 ```config.ini
 [star00]
+# この星のplaylistを作成するか
 playlist_is_enable = True
+# playしていない譜面をリストに含めるか
 not_play_is_enable = True
+# NoFailの譜面をリストに含めるか
 nf_is_enable = True
+# FullComboしていないクリア譜面をリストに含めるか
 not_fc_is_enable = False
+# クリア譜面について以下フィルタ条件に合致するものをリストに含めるか
 filtered_is_enable = True
+# クリア譜面についてのフィルタ条件:ppの下限値
 filtered_pp_min = 0
+# クリア譜面についてのフィルタ条件:ppの上限値
 filtered_pp_max = 1000
+# クリア譜面についてのフィルタ条件:Accuracyの下限値
 filtered_acc_min = 0
+# クリア譜面についてのフィルタ条件:Accuracyの上限値
 filtered_acc_max = 99
+# クリア譜面についてのフィルタ条件:Bad+Missの合計の下限値
 filtered_miss_min = 0
+# クリア譜面についてのフィルタ条件:Bad+Missの合計の上限値
 filtered_miss_max = 10000
+# クリア譜面についてのフィルタ条件:順位の下限値
 filtered_rank_min = 1000
+# クリア譜面についてのフィルタ条件:順位の上限値
 filtered_rank_max = 999999
 ```
 
 ### 実行
 
-`app.bat`をダブルクリックで実行ください。
-実行すると、consoleに以下のような内容が出力されておれば、正常に完了しています。
+`MyBSList.exe`をダブルクリックで実行してください。
+実行すると、consoleに以下のような内容が出力されておれば、正常に完了しているはずです。
+BeatSaberゲーム画面内にて`Refresh Playlist`を実行し、星毎のプレイリストが作成されているか確認してください。
 
 ```
 2022-09-29 22:22:42,230 -     INFO - -----------------[start]------------------
@@ -94,11 +111,13 @@ filtered_rank_max = 999999
 
 ### 捕捉 
 
-batをランチャー等に登録しておき、ランチャーから都度呼び出すと便利というのが今のところの個人的な所感です。
+`MyBSList.exe`をランチャー等に登録しておき、ランチャーから都度呼び出すと便利というのが今のところの個人的な所感です。
+
 
 ## ライセンス
 
-このソフトウェアは、[LGPLv2.1ライセンス](https://github.com/hatopopvr/MyBSList/blob/main/LICENSE)のもとで公開されています。
+このソフトウェアは、[MITライセンス](https://github.com/hatopopvr/MyBSList/blob/main/LICENSE)のもとで公開されています。
+また、配布するバイナリで使用している各ライセンスにつきましては、
 
 ## 連絡先
 Twitter [@hatopop_vr](https://twitter.com/hatopop_vr)
