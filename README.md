@@ -2,6 +2,8 @@
 
 ScoreSaberから取得した内容に基づいて星別のプレイリストを作成するスクリプトです.
 
+![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_001.jpg)
+
 ## 適用範囲
 本プログラムは以下の環境でのみ動作を確認しています。
 - Windows 10 pro 64bit
