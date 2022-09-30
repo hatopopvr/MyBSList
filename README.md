@@ -10,7 +10,12 @@ ScoreSaberから取得した内容と、星別のフィルタ条件に基づい�
 
 ![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_002.jpg)
 
-## 適用範囲
+総合して、以下の赤の範囲を課題譜面として条件抽出しプレイリストを作成、配置できるツールとして作りました。
+使いながら利便性の良い仕様を模索している状態のため、仕様は今後大きく変わる可能性があります。
+
+![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_003.jpg)
+
+## 動作
 本プログラムは以下の環境でのみ動作を確認しています。
 - Windows 10 pro 64bit
 
