@@ -116,7 +116,7 @@ BeatSaberゲーム画面内にて`Refresh Playlist`を実行し、星毎のプ�
 
 ## ライセンス
 
-このソフトウェアは、[MITライセンス](https://github.com/hatopopvr/MyBSList/blob/main/LICENSE)のもとで公開されています。
+このソフトウェアは、[MITライセンス](https://github.com/hatopopvr/MyBSList/blob/main/LICENSE)のもとで公開されています。  
 また、配布するバイナリで使用している各ライセンスにつきましては、[exe_used_license](https://github.com/hatopopvr/MyBSList/blob/main/exe_used_license)を参照願います。
 
 ## 連絡先
