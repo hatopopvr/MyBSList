@@ -1,6 +1,6 @@
 # MyBSList
 
-[日本語](README.md)
+[日本語](README_JP.md)
 
 This tool creates a various playlist for each star using ScoreSaber data.
 
