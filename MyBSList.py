@@ -21,7 +21,7 @@ warnings.filterwarnings("ignore")
 # 列情報の設定
 # ---------------------------------------
 # Score csv保存用列
-cols_score = ["Song", "Level", "Stars", "Acc", "FC", "Rank", "PP", "Miss", "Bad", "Combo", "Score", "Difficulty", "Play", "DailyPlay",
+cols_score = ["Song", "Level", "Stars", "Acc", "FC", "Rank", "PP", "Miss", "Bad", "Combo", "Score", "Difficulty",
               "Bpm", "Duration", "Notes", 'Nps', "Njs", "Bombs", "Obstacles", 'Upvotesratio', "Upvotes", "Downvotes", "Ranked", "Days",
               "Tags"]
 
@@ -489,7 +489,7 @@ class MyBSList:
             self.player_score_path.format(self.player_id))
 
         self.logger.info('Retrieving Player Score information completed. RankedPlayCount is {:,}.'.format(
-            _df_scores['Play'].count()))
+            _df_scores['Hash'].count()))
         return _df_scores
 
     def recalq_accuracy(self, _df_scores):
