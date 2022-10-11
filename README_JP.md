@@ -115,10 +115,15 @@ BeatSaberゲーム画面内にて`Refresh Playlist`を実行し、プレイリ�
 2022-09-29 22:22:47,735 -     INFO - ----------------[complete]-----------------
 ```
 
-### 捕捉 
+### 補足
 
 - `MyBSList.exe`をランチャー等に登録しておき、ランチャーから都度呼び出すと便利というのが今のところの個人的な所感です。
 - 使いながら利便性の良い仕様を模索している状態のため、仕様は暫定的であり今後大きく変わる可能性があります。
+
+## データ
+
+- Score情報 - [ScoreSaber](https://scoresaber.com/) Public API - [doc](https://docs.scoresaber.com/)  
+- Rank譜面データ - らっきょさん([rakkyo150](https://twitter.com/rakkyo150)) の [RankedMapData](https://github.com/rakkyo150/RankedMapData)
 
 ## ライセンス
 
