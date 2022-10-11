@@ -1,6 +1,6 @@
 # MyBSList
 
-[ENGLISH](README.MD)
+[ENGLISH](README.md)
 
 ScoreSaberから取得した内容と、条件に基づいて星別のプレイリストを作成するツールです.
 
