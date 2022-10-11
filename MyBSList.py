@@ -20,60 +20,53 @@ warnings.filterwarnings("ignore")
 # ---------------------------------------
 # 列情報の設定
 # ---------------------------------------
-# Player Infoの記録用列 (TotalFC, RankedFCは別途結合)
-cols_info = ["name", "country", "pp", "rank", "countryRank", "role", "TotalScore", "RankedScore", "AveRankedAcc", "TotalPlay", "RankedPlay", "ReplayWatched", "ScoreDate", "TotalFC", "RankedFC",
-             "TotalPlayRank", "TotalPlayJPRank", "RankedPlayRank", "RankedPlayJPRank", "TotalScoreRank", "TotalScoreJPRank", "RankedScoreRank", "RankedScoreJPRank", "AveRankedAccRank", "AveRankedAccJPRank"]
+# Score csv保存用列
+cols_score = ["Song", "Level", "Stars", "Acc", "FC", "Rank", "PP", "Miss", "Bad", "Combo", "Score", "Difficulty", "Play", "DailyPlay",
+              "Bpm", "Duration", "Notes", 'Nps', "Njs", "Bombs", "Obstacles", 'Upvotesratio', "Upvotes", "Downvotes", "Ranked", "Days",
+              "Tags"]
 
-# Score用列
-cols_score = ["Song", "Level", "Stars", "Acc", "AccRank", "FC", "Rank", "PP", "Miss", "Bad", "Combo", "Score", "Difficulty", "Play", "DailyPlay",
-              "Bpm", "Duration", "Notes", 'Nps', "Njs", "Bombs", "Obstacles", 'Upvotesratio', "Upvotes", "Downvotes", "Ranked", "Days", "Months", "Tags"]
-
-# Acc再計算用列
-cols_recalq = ['Hash', 'SongName', 'Difficulty', 'Stars', 'Notes', 'Acc', 'AccRecalq', 'AccDiff', 'AccRank',
-               'AccRankRecalq', 'MaxScore', 'MaxScoreRecalq', 'MaxScoreDiff', 'Score', 'Miss', 'Combo', ]
-
-# RankedMap(BeatSaver)結合用列
-cols_rankedmap = ['Hash', 'Difficulty', 'Upvotesratio', 'Nps', 'Tags']
-
-cols_playlist = ['Hash', 'SongName', 'SongAuthor', 'LevelAuthor', 'Difficulty', 'Notes',
-                 'Characteristic', 'Level', 'Stars', 'Maxscore', 'Acc', 'Score', 'Bad', 'Miss',
+# Playlist用列
+cols_playlist = ['Hash', 'SongName', 'SongAuthor', 'LevelAuthor', 'Difficulty', 'Notes', 'Duration',
+                 'Characteristic', 'Level', 'Stars', 'Maxscore', 'Acc', 'Score', 'Bad', 'Miss', 'Nps',
                  'PP', 'Rank', 'Modifiers', 'DateUtc', 'Date', 'Days', 'FC']
 
 
-# class MyBSTasks(pl.PlaylistDownloader):
-class MyBSTasks:
+class MyBSList:
     def __init__(self, config):
+        """_コンストラクタです_
+
+        Args:
+            config (_type_): _path関係など主要なconfigです_
+        """
         self.config = config
 
-        # rankedmapdata_url: ランク譜面データのcsvのURLです.らっきょさんデータ.
-        self.rankedmapdata_url = config['param']['url']
+        # user ------------------------------
         # BeatSaber Playlistsのディレクトリ
-        self.playlist_dir = config['param']['playlist_dir']
+        self.playlist_dir = config['user']['playlist_dir']
+        # ScoreSaberのPlayerID
+        self.player_id = config['user']['player_id']
+
+        # system-----------------------------
+        # rankedmapdata_url: ランク譜面データのcsvのURLです.らっきょさんデータ.
+        self.rankedmapdata_url = config['system']['url']
         # 作業ディレクトリ
         self.work_dir = os.path.join(
-            config['param']['work_dir'], datetime.now().strftime('%Y%m%d%H%M%S'))
-        # 作業ディレクトリ削除フラグ
-        self.clean_flag = strtobool(config['param']['clean_flag'])
+            config['system']['work_dir'], datetime.now().strftime('%Y%m%d%H%M%S'))
         # logdir
-        self.log_dir = config['param']['log_dir']
-
-        self.player_id = config['param']['player_id']
-        self.latest = int(config['param']['latest'])
-        self.page_count = int(config['param']['page_count'])
-        self.acc_recalq_override_is_enable = strtobool(
-            config['param']['acc_recalq_override_is_enable'])
+        self.log_dir = config['system']['log_dir']
+        # 差分ダウンロード有効フラグ
         self.saved_player_score_is_enable = strtobool(
-            config['param']['saved_player_score_is_enable'])
-        self.ranked_song_from_leaderboard_is_enable = strtobool(
-            config['param']['ranked_song_from_leaderboard_is_enable'])
+            config['system']['saved_player_score_is_enable'])
+        # MaxScore,Accを再計算した値をMaxScore,Accに上書きするか。
+        self.acc_recalq_override_is_enable = strtobool(
+            config['system']['acc_recalq_override_is_enable'])
 
-        self.ss_plus_is_enable = strtobool(
-            config['param']['ss_plus_is_enable'])
-        self.ss_plus_val = int(config['param']['ss_plus_val'])
-        self.ss_plus = "SS+{}".format(self.ss_plus_val)
-        self.ss_plus_rate = "SS+{}-Rate".format(self.ss_plus_val)
+        self.page_count = int(config['system']['page_count'])
 
-        self.data_path = config['param']['work_dir']
+        self.data_path = config['system']['work_dir']
+
+        # カスタムタスクjsonのパス
+        self.playlist_config_path = config['system']['playlist_config_path']
 
         # player情報の親フォルダ(data_pathの子フォルダ)
         self.player_path = r"{}/players_data/{}".format(
@@ -146,11 +139,9 @@ class MyBSTasks:
             df_scores = self.recalq_accuracy(df_scores)
             df_rankmap_data_append = self.merge_scores_ranked(
                 df_rankmap_data, df_scores)
-            self.clean_playlist()
-            self.create_playlist(df_rankmap_data_append, self.config)
+            self.clean_playlist_json(self.playlist_path, self.playlist_dir)
+            self.create_playlist_json(df_rankmap_data_append, self.config)
             self.copy_to_playlist(self.playlist_path, self.playlist_dir)
-            if self.clean_flag:
-                self.clean()
         except:
             self.logger.error("Error is occur.", exc_info=True)
         self.logger.info("----------------[complete]-----------------")
@@ -274,7 +265,7 @@ class MyBSTasks:
             " [" + df_rankmap_data["LevelAuthor"] + "]"
         df_rankmap_data["Level"] = df_rankmap_data["Stars"].astype("int")
         df_rankmap_data["LevelStr"] = df_rankmap_data["Level"].astype("str")
-        self.logger.info('Retrieving ranked map data completed. path:{}, count:{}'.format(
+        self.logger.info('Retrieving ranked map data completed. path:{}, count:{:,}'.format(
             file_name, len(df_rankmap_data["Hash"])))
         return df_rankmap_data
 
@@ -288,7 +279,7 @@ class MyBSTasks:
         Returns:
             _df_rankmap_data : DataFrame ランク譜面データフレーム
         """
-        self.logger.info('collating ranked map count from LeaderBoard.')
+        self.logger.info('Collating ranked map count from LeaderBoard.')
 
         url = r"https://scoresaber.com/api/leaderboards?ranked=true&page=1&withMetadata=true"
 
@@ -300,7 +291,7 @@ class MyBSTasks:
 
         scoresaber_ranked_page_count = math.ceil(
             total_count_from_leaderboard / level_count_page)
-        self.logger.info("ranked map count is {:,}.".format(
+        self.logger.info("Ranked map count is {:,}.".format(
             total_count_from_leaderboard))  # , scoresaber_ranked_page_count))
         df_ranked_songs_from_leaderboard = json_normalize(
             res_data['leaderboards'])
@@ -388,8 +379,6 @@ class MyBSTasks:
                     http = urllib3.PoolManager()
                     response = http.request('GET', url)
                     res_data = json.loads(response.data.decode('utf-8'))
-                    # response = requests.get(url)
-                    # res_data = response.json()
                     _df_scores_pkl = _df_scores_pkl.append(
                         json_normalize(res_data['playerScores']), ignore_index=True)
                     if df_scores_pkl['score.timeSet'].max() > _df_scores_pkl['score.timeSet'].min():
@@ -448,25 +437,15 @@ class MyBSTasks:
         _df_scores['Miss'] = _df_scores['score.missedNotes']
         _df_scores['Combo'] = _df_scores['score.maxCombo']
         _df_scores['PP'] = _df_scores['score.pp']
-        _df_scores['PPWeight'] = _df_scores['score.pp'] * \
-            _df_scores['score.weight']
         _df_scores['Rank'] = _df_scores['score.rank']
         _df_scores['Modifiers'] = _df_scores['score.modifiers']
         _df_scores['Ranked'] = _df_scores['leaderboard.ranked']
-        _df_scores['Qualified'] = _df_scores['leaderboard.qualified']
-        _df_scores['Play'] = _df_scores['leaderboard.plays']
-        _df_scores['DailyPlay'] = _df_scores['leaderboard.dailyPlays']
         _df_scores['DateUtc'] = pd.to_datetime(_df_scores['score.timeSet'])
         _df_scores_idx = _df_scores.set_index('DateUtc')
         _df_scores['DateJa'] = _df_scores_idx.index.tz_convert('Asia/Tokyo')
         _df_scores['Date'] = _df_scores['DateJa'].dt.date
         _df_scores['Days'] = (self.tz_ja.date() - _df_scores['Date']).dt.days
         _df_scores = _df_scores.set_index('DateJa')
-        _df_scores['Months'] = (_df_scores['Days'] / 30).astype('int')
-        _df_scores['DaysStr'] = _df_scores['Days'].astype('str')
-        _df_scores['MonthsStr'] = _df_scores['Months'].astype('str')
-        _df_scores['Latest'] = _df_scores['Days'].apply(self.func_latest)
-        _df_scores['AccRank'] = _df_scores['Acc'].apply(self.func_score)
         _df_scores['FC'] = _df_scores['score.fullCombo'].apply(self.func_fc)
 
         _df_scores = _df_scores[[
@@ -549,8 +528,6 @@ class MyBSTasks:
             func_max_score)
         _df_scores['AccRecalq'] = _df_scores['Score'] / \
             _df_scores['MaxScoreRecalq'] * 100
-        _df_scores['AccRankRecalq'] = _df_scores['AccRecalq'].apply(
-            self.func_score)
         _df_scores['MaxScoreDiff'] = _df_scores['MaxScore'].fillna(
             0) - _df_scores['MaxScoreRecalq'].fillna(0)
         _df_scores['AccDiff'] = _df_scores['Acc'].fillna(
@@ -563,20 +540,18 @@ class MyBSTasks:
         ]
 
         self.logger.info(
-            'There are {} results where the Acc is different from the game.'.format(len(df_errors)))
+            'There are {} results where the Accuracy is different from the game.'.format(len(df_errors)))
 
         if self.acc_recalq_override_is_enable:
             _df_scores.rename(columns={
                 "MaxScore": "MaxScoreOrg",
                 "Acc": "AccOrg",
-                "AccRank": "AccRankOrg"
             }, inplace=True)
             _df_scores.rename(columns={
                 "MaxScoreRecalq": "MaxScore",
                 "AccRecalq": "Acc",
-                "AccRankRecalq": "AccRank"
             }, inplace=True)
-            self.logger.info('Acc recalculated results overwritten.')
+            self.logger.info('Accuracy recalculated results overwritten.')
         return _df_scores
 
     def merge_scores_ranked(self, _df_rankmap_data, _df_scores):
@@ -589,7 +564,7 @@ class MyBSTasks:
         Returns:
             _DataFrame_: _結合データ_
         """
-        self.logger.info('creating combined data.')
+        self.logger.info('Creating merged data.')
         _df_rankmap_data_append = pd.merge(_df_rankmap_data, _df_scores.reset_index(
         ), on=["Hash", "Difficulty"], how="left", suffixes=("", "_y"))[cols_playlist]
         _df_rankmap_data_append = _df_rankmap_data_append[[
@@ -718,10 +693,155 @@ class MyBSTasks:
             "<<Playlist creation in working directory complete.>>")
         return
 
+    def create_playlist_json(self, _df_rankmap_data_append, _config):
+        """ jsonのsettinファイルを用いてPlaylistを作成
+        """
+        self.logger.info('<<Playlist creation in working directory start.>>')
+
+        def image_file_to_base64(_file_path):
+            """ 画像ファイルをBase64エンコードし文字列に変換
+            """
+            with open(_file_path, "rb") as image_file:
+                data = base64.b64encode(image_file.read())
+
+            return "data:image/png;base64,{}".format(data.decode('utf-8'))
+
+        json_open = open(self.playlist_config_path, 'r')
+        list_configs = json.load(json_open)
+
+        for config in list_configs:
+            playlist_is_enable = strtobool(
+                config['playlist_is_enable'])
+            not_play_is_enable = strtobool(
+                config['not_play_is_enable'])
+            nf_is_enable = strtobool(config['nf_is_enable'])
+            not_fc_is_enable = strtobool(config['not_fc_is_enable'])
+            scorefilter_is_enable = strtobool(
+                config['scorefilter_is_enable'])
+            star_min = (config['star_min'])
+            star_max = (config['star_max'])
+            nps_min = (config['nps_min'])
+            nps_max = (config['nps_max'])
+            duration_min = (config['duration_min'])
+            duration_max = (config['duration_max'])
+            scorefilter_pp_min = (config['scorefilter_pp_min'])
+            scorefilter_pp_max = (config['scorefilter_pp_max'])
+            scorefilter_acc_min = (config['scorefilter_acc_min'])
+            scorefilter_acc_max = (config['scorefilter_acc_max'])
+            scorefilter_miss_min = (config['scorefilter_miss_min'])
+            scorefilter_miss_max = (config['scorefilter_miss_max'])
+            scorefilter_rank_min = (config['scorefilter_rank_min'])
+            scorefilter_rank_max = (config['scorefilter_rank_max'])
+
+            if not playlist_is_enable:
+                continue
+
+            df_playlist = _df_rankmap_data_append.head(0)
+            _df_not_cleared_playlist = _df_rankmap_data_append.head(0)
+            _df_filtered_playlist = _df_rankmap_data_append
+
+            # not played
+            if not_play_is_enable:
+                _df_not_cleared_playlist = _df_not_cleared_playlist.append(_df_rankmap_data_append[(1 == 1)
+                                                                                                   & (_df_rankmap_data_append["Stars"] >= star_min)
+                                                                                                   & (_df_rankmap_data_append["Stars"] < star_max)
+                                                                                                   & (_df_rankmap_data_append["Nps"] >= nps_min)
+                                                                                                   & (_df_rankmap_data_append["Nps"] < nps_max)
+                                                                                                   & (_df_rankmap_data_append["Duration"] >= duration_min)
+                                                                                                   & (_df_rankmap_data_append["Duration"] < duration_max)
+                                                                                                   & (_df_rankmap_data_append['Score'].isnull())
+                                                                                                   ])
+
+            # NF
+            if nf_is_enable:
+                _df_not_cleared_playlist = _df_not_cleared_playlist.append(_df_rankmap_data_append[(1 == 1)
+                                                                                                   & (_df_rankmap_data_append["Stars"] >= star_min)
+                                                                                                   & (_df_rankmap_data_append["Stars"] < star_max)
+                                                                                                   & (_df_rankmap_data_append["Nps"] >= nps_min)
+                                                                                                   & (_df_rankmap_data_append["Nps"] < nps_max)
+                                                                                                   & (_df_rankmap_data_append["Duration"] >= duration_min)
+                                                                                                   & (_df_rankmap_data_append["Duration"] < duration_max)
+                                                                                                   & (_df_rankmap_data_append['Modifiers'] == 'NF')
+                                                                                                   ])
+
+            if scorefilter_is_enable or not_fc_is_enable:
+                _df_filtered_playlist = _df_rankmap_data_append
+            else:
+                _df_filtered_playlist = _df_rankmap_data_append.head(0)
+
+            # SongFiltered
+            _df_filtered_playlist = _df_filtered_playlist[(1 == 1)
+                                                          & (_df_rankmap_data_append["Stars"] >= star_min)
+                                                          & (_df_rankmap_data_append["Stars"] < star_max)
+                                                          & (_df_rankmap_data_append["Nps"] >= nps_min)
+                                                          & (_df_rankmap_data_append["Nps"] < nps_max)
+                                                          & (_df_rankmap_data_append["Duration"] >= duration_min)
+                                                          & (_df_rankmap_data_append["Duration"] < duration_max)
+                                                          ]
+
+            # ScoreFiltered
+            if scorefilter_is_enable:
+                _df_filtered_playlist = _df_filtered_playlist[(1 == 1)
+                                                              & (_df_rankmap_data_append["PP"] >= scorefilter_pp_min)
+                                                              & (_df_rankmap_data_append["PP"] < scorefilter_pp_max)
+                                                              & (_df_rankmap_data_append["Acc"] >= scorefilter_acc_min)
+                                                              & (_df_rankmap_data_append["Acc"] < scorefilter_acc_max)
+                                                              & (_df_rankmap_data_append["Rank"] >= scorefilter_rank_min)
+                                                              & (_df_rankmap_data_append["Rank"] < scorefilter_rank_max)
+                                                              & (_df_rankmap_data_append["Miss"] + _df_rankmap_data_append["Bad"] >= scorefilter_miss_min)
+                                                              & (_df_rankmap_data_append["Miss"] + _df_rankmap_data_append["Bad"] < scorefilter_miss_max)
+                                                              & (_df_rankmap_data_append['Modifiers'] != 'NF')
+                                                              ]
+
+            if not_fc_is_enable:
+                _df_filtered_playlist = _df_filtered_playlist[(1 == 1)
+                                                              & (_df_rankmap_data_append['FC'] != 'FC')
+                                                              ]
+
+            df_playlist = df_playlist.append(_df_not_cleared_playlist)
+            df_playlist = df_playlist.append(_df_filtered_playlist)
+
+            # playlist化
+            if len(df_playlist) > 0:
+                songs = []
+                for i, x in df_playlist.iterrows():
+                    songs += [{
+                        "songName": x["SongName"],
+                        "levelAuthorName": x["LevelAuthor"],
+                        "hash": x["Hash"],
+                        "levelid": f"custom_level_{x['Hash']}",
+                        "difficulties": [
+                            {
+                                "characteristic": "Standard",
+                                "name": x["Difficulty"]
+                            }
+                        ]
+                    }]
+
+                _img_url = config['image_path']
+
+                playlist = {
+                    "playlistTitle": config['list_name'],
+                    "playlistAuthor": "hatopop",
+                    "songs": songs, "image": image_file_to_base64(_img_url)
+                }
+
+                song_playlist_path = r"{}/{}.json".format(
+                    self.playlist_path, config['list_name'])
+
+                with open(song_playlist_path, "w") as f:
+                    json.dump(playlist, f)
+
+                self.logger.info("Playlist: {}, Count:{}".format(
+                    song_playlist_path, len(df_playlist)))
+        self.logger.info(
+            "<<Playlist creation in working directory complete.>>")
+        return
+
     def clean_playlist(self):
         """ 作業ディレクトリからPlaylistを削除します
         """
-        self.logger.info('delete playlist in working directory.')
+        self.logger.info('Delete playlist in working directory.')
         cnt = 0
         for level_i in range(13):
             song_playlist_path = r"{}/task_{:02d}.json".format(
@@ -733,6 +853,36 @@ class MyBSTasks:
                 self.logger.debug("{} は存在していません.".format(song_playlist_path))
         self.logger.info(
             'Playlist deletion in working directory complete. count:{:,} '.format(cnt))
+        return
+
+    def clean_playlist_json(self, input_dir, playlist_dir):
+        """ 作業ディレクトリとPlaylistディレクトリからMyBSList関連のPlaylistを削除します
+        """
+        self.logger.info(
+            'Clean playlist in work & playlists directory for MyBSList.')
+        cnt = 0
+
+        files = os.listdir(input_dir)
+        workdir_count = 0
+        playlistdir_count = 0
+        for file in files:
+            input_file = os.path.join(input_dir, file)
+            playlist_file = os.path.join(playlist_dir, file)
+            shutil.copy2(input_file, playlist_dir)
+            try:
+                os.remove(input_file)
+                workdir_count += 1
+            except:
+                self.logger.debug("{} does not exists.".format(input_file))
+
+            try:
+                os.remove(playlist_file)
+                playlistdir_count += 1
+            except:
+                self.logger.debug("{} does not exists.".format(playlist_file))
+
+        self.logger.info(
+            'Playlist clean in working & playlists directory complete. count:{:,}, {:,}'.format(workdir_count, playlistdir_count))
         return
 
     def copy_to_playlist(self, input_dir, playlist_dir):
@@ -757,48 +907,18 @@ class MyBSTasks:
         else:
             return x
 
-    def func_score(self, x):
-        if x > 100:
-            return "-"
-        elif x == 100:
-            return "SSS"
-        elif x >= self.ss_plus_val and self.ss_plus_is_enable:
-            return self.ss_plus
-        elif x >= 90:
-            return "SS"
-        elif x >= 80:
-            return "S"
-        elif x >= 65:
-            return "A"
-        elif x >= 50:
-            return "B"
-        elif x >= 35:
-            return "C"
-        elif x >= 20:
-            return "D"
-        elif x >= 0:
-            return "E"
-        else:
-            return "-"
-
     def func_fc(self, x):
         if x:
             return "FC"
         else:
             return "-"
 
-    def func_latest(self, x):
-        if x <= self.latest:
-            return 1
-        else:
-            return 0
-
 
 def main():
     # configの取得
     config = configparser.ConfigParser()
     config.read('config.ini', encoding='utf-8')
-    mybstasks = MyBSTasks(config)
+    mybstasks = MyBSList(config)
     mybstasks.process()
 
 

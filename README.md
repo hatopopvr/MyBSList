@@ -1,126 +1,143 @@
 # MyBSList
 
-ScoreSaberから取得した内容と、星別のフィルタ条件に基づいて星別のプレイリストを作成するツールです.
+This tool creates a various playlist for each star using ScoreSaber data.
 
-![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_001.jpg)
+![img](images/img_explain_001.jpg)
 
-星毎に次のようなAccuracy以下の範囲の譜面のプレイリストを作成し、クリア埋めと散布図を綺麗にするのを支援します。  
-例）★0:98、★1:96、★2:95、★3:93、★4:92、★5:91、★6:88、★7:85、★8:80以下のAccuracyの譜面を課題譜面としてそれぞれ抽出
+I need a playlist below the red line.
+This tool helps with that.
 
-![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_002.jpg)
+![img](images/img_explain_002.jpg)
 
-本ツールの課題譜面抽出は以下の赤の範囲が対象です。
+This tool creates playlists for the following red ranges.
 
-![img](https://github.com/hatopopvr/MyBSList/blob/main/images/img_explain_003.jpg)
+![img](images/img_explain_003.jpg)
 
-## 動作
-本プログラムは以下の環境でのみ動作を確認しています。
+## Confirmation of operation
+
+This program has been tested only on the following environments
 - Windows 10 pro 64bit
 
-## 使い方
+## How to use
 
-### 導入
+### installation
 
-[release](https://github.com/hatopopvr/MyBSList/releases)から最新のzipをダウンロードし、任意の場所で解凍します.
+Download the latest zip file from [release](https://github.com/hatopopvr/MyBSList/releases) and unzip it at any location.
 
-### 設定
 
-`config.ini`を開き、以下を自分の環境に合わせて設定ください。  
-Playlistsディレクトリは `[Beat Saberインストールディレクトリ]\Playlists` にあります。
+### Configuration
 
-```config.ini
-[param]
-# ScoreSaberのPlayerID。変更必須。
+1. Open `config.ini` and set the following according to your environment.  
+The Playlists directory is located in `[Beat Saber installation directory]\Playlists`.
+
+```ini
+[user]
+# ScoreSaber PlayerID, must be changed.
 player_id = 76561198412839195
 
-# BeatSaberプレイリストのフォルダ
+# Directry of BeatSaber playlists
 playlist_dir = C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Playlists
 ```
 
-星毎に作成したいプレイリストの内容に応じて以下の条件を設定してください。
+2. Open `playlist_config.json` and set the conditions for creating the playlist.  
+The `playlist_config.json` contains the settings I use.  
+Use it as a reference and edit it to create your own configuration.  
 
-```config.ini
-[star00]
-# この星のplaylistを作成するか
-playlist_is_enable = True
-# playしていない譜面をリストに含めるか
-not_play_is_enable = True
-# NoFailの譜面をリストに含めるか
-nf_is_enable = True
-# FullComboしていないクリア譜面をリストに含めるか
-not_fc_is_enable = False
-# クリア譜面について以下フィルタ条件に合致するものをリストに含めるか
-filtered_is_enable = True
-# クリア譜面についてのフィルタ条件:ppの下限値
-filtered_pp_min = 0
-# クリア譜面についてのフィルタ条件:ppの上限値
-filtered_pp_max = 1000
-# クリア譜面についてのフィルタ条件:Accuracyの下限値
-filtered_acc_min = 0
-# クリア譜面についてのフィルタ条件:Accuracyの上限値
-filtered_acc_max = 99
-# クリア譜面についてのフィルタ条件:Bad+Missの合計の下限値
-filtered_miss_min = 0
-# クリア譜面についてのフィルタ条件:Bad+Missの合計の上限値
-filtered_miss_max = 10000
-# クリア譜面についてのフィルタ条件:順位の下限値
-filtered_rank_min = 1000
-# クリア譜面についてのフィルタ条件:順位の上限値
-filtered_rank_max = 999999
+```json
+    {
+        "list_name": "star00",                      # Name of playlist
+        "image_path": "images/img_star_00.png",     # Path of playlist image
+        "playlist_is_enable": "True",               # Whether to create this playlist
+        # flag
+        "not_play_is_enable": "True",               # whether to include not played scores in the playlist | True : include
+        "nf_is_enable": "True",                     # whether to include NoFail scores in playlist | True : include
+        "not_fc_is_enable": "False",                # whether to include not FullCombo scores in playlist | True : include
+        "scorefilter_is_enable": "True",            # whether to include cleared scores in the playlist if they match the following score filters | True : include
+        # song filter for all ranked songs
+        "star_min": 0,                              # lower limit of star               
+        "star_max": 1,                              # upper limit of star
+        "nps_min": 0,                               # lower limit of nps 
+        "nps_max": 20,                              # upper limit of nps 
+        "duration_min": 0,                          # lower limit of duration (Unit: seconds)
+        "duration_max": 1000,                       # upper limit of duration (Unit: seconds)
+        # score filter for cleared song
+        "scorefilter_pp_min": 0,                    # lower limit of pp
+        "scorefilter_pp_max": 1000,                 # upper limit of pp
+        "scorefilter_acc_min": 0,                   # lower limit of accuracy
+        "scorefilter_acc_max": 98,                  # upper limit of accuracy
+        "scorefilter_miss_min": 0,                  # lower limit of sum of Bad+Miss cut
+        "scorefilter_miss_max": 10000,              # Upper limit of sum of Bad+Miss cut
+        "scorefilter_rank_min": 0,                  # lower limit of global rank     
+        "scorefilter_rank_max": 999999              # upper limit of global rank
+    },
 ```
 
-### 実行
+### Execution
 
-`MyBSList.exe`をダブルクリックで実行してください。
-実行すると、consoleに以下のような内容が出力されておれば、正常に完了しているはずです。
-BeatSaberゲーム画面内にて`Refresh Playlist`を実行し、星毎のプレイリストが作成されているか確認してください。
+Execute `MyBSList.exe` by double-clicking it.
+If the following contents are output to the console after execution, it should be completed normally.
+Run `Refresh Playlist` in the BeatSaber game screen and check if the playlist for each star is created.
 
+```log
+2022-10-10 18:17:29,901 -     INFO - -----------------[start]------------------
+2022-10-10 18:17:29,901 -     INFO - Creating working directory.
+2022-10-10 18:17:29,901 -     INFO - Work directory creation complete. path:work
+2022-10-10 18:17:29,902 -     INFO - Getting player information.
+2022-10-10 18:17:30,498 -     INFO - Retrieving player info. hatopop, TotalPlayCount:3,194, RankedPlayCount:2,872, Pages:33
+2022-10-10 18:17:30,499 -     INFO - Getting ranked map data.
+2022-10-10 18:17:33,396 -     INFO - Retrieving ranked map data completed. path:work\outcome.csv, count:3,420
+2022-10-10 18:17:33,397 -     INFO - Collating ranked map count from LeaderBoard.
+2022-10-10 18:17:34,035 -     INFO - Ranked map count is 3,420.
+2022-10-10 18:17:34,037 -     INFO - Ranked map counts matched. Completing re-acquisition process.
+2022-10-10 18:17:34,038 -     INFO - Retrieving Player Score information from ScoreSaber.
+2022-10-10 18:17:35,736 -     INFO - Retrieving Player Score information completed. RankedPlayCount is 2,872.
+2022-10-10 18:17:35,737 -     INFO - Start recalculating Acc based on number of notes and combos.
+2022-10-10 18:17:35,743 -     INFO - There are 42 results where the Accuracy is different from the game.
+2022-10-10 18:17:35,744 -     INFO - Accuracy recalculated results overwritten.
+2022-10-10 18:17:35,744 -     INFO - Creating merged data.
+2022-10-10 18:17:35,789 -     INFO - Merge complete. Count:3,420
+2022-10-10 18:17:35,789 -     INFO - Clean playlist in work & playlists directory for MyBSList.
+2022-10-10 18:17:35,806 -     INFO - Playlist clean in working & playlists directory complete. count:23, 23
+2022-10-10 18:17:35,806 -     INFO - <<Playlist creation in working directory start.>>
+2022-10-10 18:17:35,824 -     INFO - Playlist: work/playlists/star00.json, Count:18
+2022-10-10 18:17:35,843 -     INFO - Playlist: work/playlists/star01.json, Count:38
+2022-10-10 18:17:35,869 -     INFO - Playlist: work/playlists/star02.json, Count:123
+2022-10-10 18:17:35,892 -     INFO - Playlist: work/playlists/star03.json, Count:70
+2022-10-10 18:17:35,914 -     INFO - Playlist: work/playlists/star04.json, Count:57
+2022-10-10 18:17:35,937 -     INFO - Playlist: work/playlists/star05.json, Count:71
+2022-10-10 18:17:35,953 -     INFO - Playlist: work/playlists/star06.json, Count:15
+2022-10-10 18:17:35,965 -     INFO - Playlist: work/playlists/star06_pp.json, Count:36
+2022-10-10 18:17:35,975 -     INFO - Playlist: work/playlists/star07_task.json, Count:29
+2022-10-10 18:17:35,989 -     INFO - Playlist: work/playlists/star07_not.json, Count:1
+2022-10-10 18:17:36,001 -     INFO - Playlist: work/playlists/star07_pp.json, Count:26
+2022-10-10 18:17:36,013 -     INFO - Playlist: work/playlists/star08_task.json, Count:38
+2022-10-10 18:17:36,032 -     INFO - Playlist: work/playlists/star08_not.json, Count:109
+2022-10-10 18:17:36,043 -     INFO - Playlist: work/playlists/star08_nf.json, Count:8
+2022-10-10 18:17:36,053 -     INFO - Playlist: work/playlists/star08_pp.json, Count:12
+2022-10-10 18:17:36,073 -     INFO - Playlist: work/playlists/star09_not_play.json, Count:129
+2022-10-10 18:17:36,086 -     INFO - Playlist: work/playlists/star09_nf.json, Count:34
+2022-10-10 18:17:36,099 -     INFO - Playlist: work/playlists/star09_task.json, Count:56
+2022-10-10 18:17:36,133 -     INFO - Playlist: work/playlists/star10.json, Count:214
+2022-10-10 18:17:36,146 -     INFO - Playlist: work/playlists/star10_nf.json, Count:34
+2022-10-10 18:17:36,173 -     INFO - Playlist: work/playlists/star11.json, Count:126
+2022-10-10 18:17:36,183 -     INFO - Playlist: work/playlists/star11_nf.json, Count:1
+2022-10-10 18:17:36,199 -     INFO - Playlist: work/playlists/star12.json, Count:8
+2022-10-10 18:17:36,208 -     INFO - <<Playlist creation in working directory complete.>>
+2022-10-10 18:17:36,208 -     INFO - Copy and paste the playlists into the playlists directory.
+2022-10-10 18:17:36,301 -     INFO - 23 playlists have been completed.:C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Playlists
+2022-10-10 18:17:36,301 -     INFO - ----------------[complete]-----------------
 ```
-2022-09-29 22:22:42,230 -     INFO - -----------------[start]------------------
-2022-09-29 22:22:42,230 -     INFO - Creating working directory.
-2022-09-29 22:22:42,230 -     INFO - Work directory creation complete. path:work
-2022-09-29 22:22:42,231 -     INFO - Getting player information.
-2022-09-29 22:22:42,721 -     INFO - Retrieving player info. hatopop, TotalPlayCount:3,064, RankedPlayCount:2,830, Pages:32
-2022-09-29 22:22:42,721 -     INFO - Getting ranked map data.
-2022-09-29 22:22:44,951 -     INFO - Retrieving ranked map data completed. path:work\outcome.csv, count:3420
-2022-09-29 22:22:44,951 -     INFO - collating ranked map count from LeaderBoard.
-2022-09-29 22:22:45,379 -     INFO - ranked map count is 3,420.
-2022-09-29 22:22:45,382 -     INFO - Ranked map counts matched. Completing re-acquisition process.
-2022-09-29 22:22:45,382 -     INFO - Retrieving Player Score information from ScoreSaber.
-2022-09-29 22:22:47,389 -     INFO - Retrieving Player Score information completed. RankedPlayCount is 2,830.
-2022-09-29 22:22:47,390 -     INFO - Start recalculating Acc based on number of notes and combos.
-2022-09-29 22:22:47,399 -     INFO - There are 42 results where the Acc is different from the game.
-2022-09-29 22:22:47,400 -     INFO - Acc recalculated results overwritten.
-2022-09-29 22:22:47,400 -     INFO - creating combined data.
-2022-09-29 22:22:47,451 -     INFO - Merge complete. Count:3,420
-2022-09-29 22:22:47,455 -     INFO - delete playlist in working directory.
-2022-09-29 22:22:47,457 -     INFO - Playlist deletion in working directory complete. count:10
-2022-09-29 22:22:47,457 -     INFO - <<Playlist creation in working directory start.>>
-2022-09-29 22:22:47,499 -     INFO - Playlist: work/playlists/task_03.json, Count:3
-2022-09-29 22:22:47,521 -     INFO - Playlist: work/playlists/task_04.json, Count:4
-2022-09-29 22:22:47,537 -     INFO - Playlist: work/playlists/task_05.json, Count:16
-2022-09-29 22:22:47,552 -     INFO - Playlist: work/playlists/task_06.json, Count:9
-2022-09-29 22:22:47,571 -     INFO - Playlist: work/playlists/task_07.json, Count:64
-2022-09-29 22:22:47,598 -     INFO - Playlist: work/playlists/task_08.json, Count:165
-2022-09-29 22:22:47,629 -     INFO - Playlist: work/playlists/task_09.json, Count:214
-2022-09-29 22:22:47,659 -     INFO - Playlist: work/playlists/task_10.json, Count:202
-2022-09-29 22:22:47,683 -     INFO - Playlist: work/playlists/task_11.json, Count:126
-2022-09-29 22:22:47,697 -     INFO - Playlist: work/playlists/task_12.json, Count:8
-2022-09-29 22:22:47,698 -     INFO - <<Playlist creation in working directory complete.>>
-2022-09-29 22:22:47,698 -     INFO - Copy and paste the playlists into the playlists directory.
-2022-09-29 22:22:47,734 -     INFO - 10 playlists have been completed.:C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Playlists
-2022-09-29 22:22:47,735 -     INFO - ----------------[complete]-----------------
-```
 
-### 捕捉 
+### Remarks.
 
-- `MyBSList.exe`をランチャー等に登録しておき、ランチャーから都度呼び出すと便利というのが今のところの個人的な所感です。
-- 使いながら利便性の良い仕様を模索している状態のため、仕様は暫定的であり今後大きく変わる可能性があります。
+- It is convenient to register `MyBSList.exe` in a launcher, etc. and call it each time.
+- The specification is preliminary and may change significantly in the future.
 
-## ライセンス
 
-このソフトウェアは、[MITライセンス](https://github.com/hatopopvr/MyBSList/blob/main/LICENSE)のもとで公開されています。  
-また、配布するバイナリで使用している各ライセンスにつきましては、[exe_used_license](https://github.com/hatopopvr/MyBSList/blob/main/exe_used_license)を参照願います。
+## License
 
-## 連絡先
+This software is released under the [MIT License](https://github.com/hatopopvr/MyBSList/blob/main/LICENSE).  
+Please refer to [exe_used_license](https://github.com/hatopopvr/MyBSList/blob/main/exe_used_license) for the licenses used in the binaries distributed.
+
+## Contact
 Twitter [@hatopop_vr](https://twitter.com/hatopop_vr)
