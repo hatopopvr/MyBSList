@@ -133,6 +133,10 @@ Run `Refresh Playlist` in the BeatSaber game screen and check if the playlist fo
 - It is convenient to register `MyBSList.exe` in a launcher, etc. and call it each time.
 - The specification is preliminary and may change significantly in the future.
 
+## Data
+- Score Data from [ScoreSaber](https://scoresaber.com/) Public API - [doc](https://docs.scoresaber.com/)  
+- Ranked Map Data from RankedMapData by [rakkyo150](https://twitter.com/rakkyo150) - [RankedMapData](https://github.com/rakkyo150/RankedMapData)  
+
 
 ## License
 
