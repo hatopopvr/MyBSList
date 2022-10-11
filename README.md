@@ -130,7 +130,7 @@ Run `Refresh Playlist` in the BeatSaber game screen and check if the playlist fo
 2022-10-10 18:17:36,301 -     INFO - ----------------[complete]-----------------
 ```
 
-### Remarks.
+### Remarks
 
 - It is convenient to register `MyBSList.exe` in a launcher, etc. and call it each time.
 - The specification is preliminary and may change significantly in the future.
