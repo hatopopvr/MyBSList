@@ -18,11 +18,15 @@ ScoreSaberから取得した内容と、条件に基づいて星別のプレイ�
 本プログラムは以下の環境でのみ動作を確認しています。
 - Windows 10 pro 64bit
 
-## 使い方
-
-### 導入
+## 導入
 
 [release](https://github.com/hatopopvr/MyBSList/releases)から最新のzipをダウンロードし、任意の場所で解凍します.
+
+## アップデート
+
+`MyBSList`に上書きしてください。動作しない場合は、workディレクトリとlogディレクトリを削除したのち`MyBSList.exe`を実行するようにしてください。
+
+## 使い方
 
 ### 設定
 
