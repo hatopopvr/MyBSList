@@ -20,12 +20,15 @@ This tool creates playlists for the following red ranges.
 This program has been tested only on the following environments
 - Windows 10 pro 64bit
 
-## How to use
-
-### installation
+## installation
 
 Download the latest zip file from [release](https://github.com/hatopopvr/MyBSList/releases) and unzip it at any location.
 
+## Update
+
+Overwrite the `MyBSList` directory. If it does not work, delete the work and log directories and then run `MyBSList.exe`.
+
+## How to use
 
 ### Configuration
 
