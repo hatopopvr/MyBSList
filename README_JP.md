@@ -24,7 +24,7 @@ ScoreSaberから取得した内容と、条件に基づいて星別のプレイ�
 
 ## アップデート
 
-`MyBSList`に上書きしてください。動作しない場合は、workディレクトリとlogディレクトリを削除したのち`MyBSList.exe`を実行するようにしてください。
+`MyBSList`ディレクトリを上書きしてください。動作しない場合は、workディレクトリとlogディレクトリを削除したのち`MyBSList.exe`を実行するようにしてください。
 
 ## 使い方
 
@@ -34,47 +34,61 @@ ScoreSaberから取得した内容と、条件に基づいて星別のプレイ�
 Playlistsディレクトリは `[Beat Saberインストールディレクトリ]\Playlists` にあります。
 
 ```ini
-[param]
+[user]
 # ScoreSaberのPlayerID。変更必須。
 player_id = 76561198412839195
 
 # BeatSaberプレイリストのフォルダ
 playlist_dir = C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Playlists
+
+[system]
+# Playlist Configのファイルパス
+playlist_config_path = playlist_config.json
 ```
 
 星毎に作成したいプレイリストの内容に応じて以下の条件を設定してください。
 
-`playlist_config.json`を開き、作成したいプレイリストの条件似合わせて以下を設定ください。
-`playlist_config.json`には私が使っている設定が含まれています。
+`playlist_config.json`を作成し、作成したいプレイリストの条件に合わせて以下を設定ください。
+`hatopop_playlist_config.json`には私が使っている設定が含まれています。
 それを参考にして自分の設定を編集してください。
-
+以下の ※ がついている部分でフィルタリングに必要ない部分は削除しても動作に問題ありません。(v0.2.0で対応しました。)
 
 ```json
     {
-        "list_name": "star00",                      # Playlistの名称
+        "list_name": "star00",                      # Playlistの名称、全て異なる名称にしてください
         "image_path": "images/img_star_00.png",     # Playlistアイコン画像のパス
-        "playlist_is_enable": "True",               # この条件のPlaylistを作成するか
+        "playlist_is_enable": "True",               # この条件のPlaylistを作成するか | True : 作成する
         # flag
         "not_play_is_enable": "True",               # 未プレイ(not play)の譜面をPlaylistに含むか | True : 含む
         "nf_is_enable": "True",                     # NoFailでクリアした譜面をPlaylistに含むか | True : 含む
         "not_fc_is_enable": "False",                # フルコンボ済みの譜面をPlaylistから除外するか | True : 除外する
         "scorefilter_is_enable": "True",            # 以下のスコアフィルタ条件に合致するクリア済み譜面をplaylistに含むか | True : 含む
-        # ランク譜面からの曲抽出条件
-        "star_min": 0,                              # ★下限               
-        "star_max": 1,                              # ★上限
-        "nps_min": 0,                               # NPS下限(NPS:秒あたりノーツ数) 
-        "nps_max": 20,                              # NPS上限(NPS:秒あたりノーツ数)
-        "duration_min": 0,                          # 曲長さ下限(単位: 秒)
-        "duration_max": 1000,                       # 曲長さ上限(単位: 秒)
-        # クリア済み譜面のスコアフィルタ
-        "scorefilter_pp_min": 0,                    # PP下限
-        "scorefilter_pp_max": 1000,                 # PP上限
-        "scorefilter_acc_min": 0,                   # Accuracy下限
-        "scorefilter_acc_max": 98,                  # Accuracy上限
-        "scorefilter_miss_min": 0,                  # Miss(BadCutとMissCutの合計)数の下限
-        "scorefilter_miss_max": 10000,              # Miss(BadCutとMissCutの合計)数の上限
-        "scorefilter_rank_min": 0,                  # Global Rankの下限
-        "scorefilter_rank_max": 999999              # Global Rankの上限
+        # ランク譜面からの曲抽出条件 ※
+        "star_min": 0,                              # ★下限 ※               
+        "star_max": 1,                              # ★上限 ※
+        "nps_min": 0,                               # NPS下限(NPS:秒あたりノーツ数) ※
+        "nps_max": 20,                              # NPS上限(NPS:秒あたりノーツ数) ※
+        "njs_min": 0,                               # NJS下限(NJS:Notes Jump Speed) ※
+        "njs_max": 30,                              # NJS上限(NJS:Notes Jump Speed) ※
+        "duration_min": 0,                          # 曲長さ下限(単位: 秒) ※
+        "duration_max": 1000,                       # 曲長さ上限(単位: 秒) ※
+        "notes_min": 0,                             # Notes数下限 ※
+        "notes_max": 10000,                         # Notes数上限 ※
+        "bombs_min": 0,                             # ボム数下限 ※
+        "bombs_max": 10000,                         # ボム数上限 ※
+        "obstacles_min": 0,                         # 壁数下限 ※
+        "obstacles_max": 10000,                     # 壁数上限 ※
+        # クリア済み譜面のスコアフィルタ ※
+        "scorefilter_pp_min": 0,                    # PP下限 ※
+        "scorefilter_pp_max": 1000,                 # PP上限 ※
+        "scorefilter_acc_min": 0,                   # Accuracy下限(Accが低い譜面を抽出するなど) ※
+        "scorefilter_acc_max": 98,                  # Accuracy上限 ※
+        "scorefilter_miss_min": 0,                  # Miss(BadCutとMissCutの合計)数の下限 ※
+        "scorefilter_miss_max": 10000,              # Miss(BadCutとMissCutの合計)数の上限 ※
+        "scorefilter_rank_min": 0,                  # Global Rankの下限 ※
+        "scorefilter_rank_max": 999999,             # Global Rankの上限(順位が低い譜面を抽出するなど) ※
+        "scorefilter_days_min": 0,                  # スコア更新経過日数下限(更新が古い譜面を抽出するなど) ※
+        "scorefilter_days_max": 10000               # スコア更新経過日数上限 ※
     },
 ```
 

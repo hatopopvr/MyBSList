@@ -48,9 +48,11 @@ playlist_dir = C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Playlist
 The `playlist_config.json` contains the settings I use.  
 Use it as a reference and edit it to create your own configuration.  
 
+2. Create a `playlist_config.json` and set the following according to the conditions of the playlist you want to create. `hatopop_playlist_config.json` contains the settings I am using. Please refer to it and edit your own settings. There is no problem in operation even if you delete the part with ※ that is not necessary for filtering (supported in v0.2.0).
+
 ```json
     {
-        "list_name": "star00",                      # Name of playlist
+        "list_name": "star00",                      # Name of playlist, please set all different names
         "image_path": "images/img_star_00.png",     # Path of playlist image
         "playlist_is_enable": "True",               # Whether to create this playlist
         # flag
@@ -58,23 +60,33 @@ Use it as a reference and edit it to create your own configuration.
         "nf_is_enable": "True",                     # whether to include NoFail scores in playlist | True : include
         "not_fc_is_enable": "False",                # whether to include not FullCombo scores in playlist | True : include
         "scorefilter_is_enable": "True",            # whether to include cleared scores in the playlist if they match the following score filters | True : include
-        # song filter for all ranked songs
-        "star_min": 0,                              # lower limit of star               
-        "star_max": 1,                              # upper limit of star
-        "nps_min": 0,                               # lower limit of nps 
-        "nps_max": 20,                              # upper limit of nps 
-        "duration_min": 0,                          # lower limit of duration (Unit: seconds)
-        "duration_max": 1000,                       # upper limit of duration (Unit: seconds)
-        # score filter for cleared song
-        "scorefilter_pp_min": 0,                    # lower limit of pp
-        "scorefilter_pp_max": 1000,                 # upper limit of pp
-        "scorefilter_acc_min": 0,                   # lower limit of accuracy
-        "scorefilter_acc_max": 98,                  # upper limit of accuracy
-        "scorefilter_miss_min": 0,                  # lower limit of sum of Bad+Miss cut
-        "scorefilter_miss_max": 10000,              # Upper limit of sum of Bad+Miss cut
-        "scorefilter_rank_min": 0,                  # lower limit of global rank     
-        "scorefilter_rank_max": 999999              # upper limit of global rank
-    },
+        # song filter for all ranked songs ※
+        "star_min": 0,                              # lower limit of star ※               
+        "star_max": 1,                              # upper limit of star ※
+        "nps_min": 0,                               # lower limit of NPS (NPS: Notes per second) ※
+        "nps_max": 20,                              # upper limit of NPS (NPS: Notes per second) ※
+        "njs_min": 0,                               # lower limit of NJS (NJS: Notes Jump Speed) ※
+        "njs_max": 30,                              # upper limit of NJS (NJS: Notes Jump Speed) ※
+        "duration_min": 0,                          # lower limit of Song length (unit: seconds) ※
+        "duration_max": 1000,                       # upper limit of Song length (unit: seconds) ※
+        "notes_min": 0,                             # lower limit of Notes count ※
+        "notes_max": 10000,                         # upper limit of Notes count ※
+        "bombs_min": 0,                             # lower limit of Bomb count ※
+        "bombs_max": 10000,                         # upper limit of Bomb count ※
+        "obstacles_min": 0,                         # lower limit of Wall count ※
+        "obstacles_max": 10000,                     # upper limit of Wall count ※
+        # score filter for cleared song ※
+        "scorefilter_pp_min": 0,                    # lower limit of pp ※
+        "scorefilter_pp_max": 1000,                 # upper limit of pp ※
+        "scorefilter_acc_min": 0,                   # lower limit of accuracy ※
+        "scorefilter_acc_max": 98,                  # upper limit of accuracy ※
+        "scorefilter_miss_min": 0,                  # lower limit of sum of Bad+Miss cut ※
+        "scorefilter_miss_max": 10000,              # Upper limit of sum of Bad+Miss cut ※
+        "scorefilter_rank_min": 0,                  # lower limit of global rank ※
+        "scorefilter_rank_max": 999999,             # upper limit of global rank ※
+        "scorefilter_days_min": 0,                  # Lower limit of days elapsed since score update (to extract old score) ※
+        "scorefilter_days_max": 10000               # Upper limit of days elapsed since score update ※
+},
 ```
 
 ### Execution

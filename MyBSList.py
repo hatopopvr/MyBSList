@@ -28,6 +28,7 @@ cols_score = ["Song", "Level", "Stars", "Acc", "FC", "Rank", "PP", "Miss", "Bad"
 # Playlist用列
 cols_playlist = ['Hash', 'SongName', 'SongAuthor', 'LevelAuthor', 'Difficulty', 'Notes', 'Duration',
                  'Characteristic', 'Level', 'Stars', 'Maxscore', 'Acc', 'Score', 'Bad', 'Miss', 'Nps',
+                 "Njs", "Bombs", "Obstacles", 'Upvotesratio', "Upvotes", "Downvotes",
                  'PP', 'Rank', 'Modifiers', 'DateUtc', 'Date', 'Days', 'FC']
 
 
@@ -40,13 +41,13 @@ class MyBSList:
         """
         self.config = config
 
-        # user ------------------------------
+        # config user ------------------------------
         # BeatSaber Playlistsのディレクトリ
         self.playlist_dir = config['user']['playlist_dir']
         # ScoreSaberのPlayerID
         self.player_id = config['user']['player_id']
 
-        # system-----------------------------
+        # config system-----------------------------
         # rankedmapdata_url: ランク譜面データのcsvのURLです.らっきょさんデータ.
         self.rankedmapdata_url = config['system']['url']
         # 作業ディレクトリ
@@ -68,6 +69,7 @@ class MyBSList:
         # カスタムタスクjsonのパス
         self.playlist_config_path = config['system']['playlist_config_path']
 
+        # 設定値 -----------------------------
         # player情報の親フォルダ(data_pathの子フォルダ)
         self.player_path = r"{}/players_data/{}".format(
             self.data_path, self.player_id)
@@ -82,7 +84,6 @@ class MyBSList:
             self.player_path, self.player_id)
         self.player_score_pickle_path = r"{}/scores_ranked_{}.pkl".format(
             self.player_path, self.player_id)
-
         # 曲情報の保存先
         self.song_list_path = r"{}/song_list_full.csv".format(self.data_path)
         self.song_ranked_path = r"{}/song_ranked.csv".format(self.data_path)
@@ -90,13 +91,26 @@ class MyBSList:
         # levelclearランク除外関連パス
         self.level_cleared_path = r"{}/level_cleared_{}.csv".format(
             self.player_path, self.player_id)
-
         # playlistの保存
         self.playlist_path = r"{}/playlists".format(self.data_path)
 
         # タイムゾーンの設定
         self.tz_ja = pd.Timestamp(datetime.now()).tz_localize(
             'UTC').tz_convert('Asia/Tokyo')
+
+        # Check if playlist_config.json exists
+        if not os.path.exists(f'{self.playlist_config_path}'):
+            if os.path.exists('playlist_config_sample.json'):
+                shutil.copy('playlist_config_sample.json', f'{self.playlist_config_path}')
+            #     print(f"{self.playlist_config_path} not found. A new {self.playlist_config_path} has been created based on playlist_config_sample.json.")
+            #     print(f"Please edit {self.playlist_config_path} with your settings and restart the program.")
+            # else:
+            #     print(f"{self.playlist_config_path} and playlist_config_sample.json not found. Please create a {self.playlist_config_path} file.")
+            #     return
+                show_warning(f"{self.playlist_config_path} not found. A new {self.playlist_config_path} has been created based on playlist_config_sample.json.\nPlease edit {self.playlist_config_path} with your settings and restart the program.")
+            else:
+                show_warning(f"{self.playlist_config_path} and playlist_config_sample.json not found. Please create a {self.playlist_config_path} file.")
+                return
 
     def set_logger(self):
         """ logger を作成します。
@@ -129,18 +143,28 @@ class MyBSList:
         self.set_logger()
         self.logger.info("-----------------[start]------------------")
         try:
+            # 作業ディレクトリを作成します
             self.create()
+            # プレイヤー情報を取得します
             _, self.RangeCount = self.get_player_info()
+            # ランク譜面の曲データを取得します
             df_rankmap_data = self.get_ranked_song_data()
+            # ランク譜面の曲データをリーダーボードから取得します(この処理は全譜面数が一致しない場合に限ります.)
             df_rankmap_data = self.get_ranked_song_data_from_leaderboard(
                 df_rankmap_data)
+            # プレイヤーのスコアデータを取得します
             df_scores = self.get_player_score_data(
                 self.RangeCount, df_rankmap_data)
+            # 精度を再計算します
             df_scores = self.recalq_accuracy(df_scores)
+            # スコアデータとランク譜面の曲データをマージします
             df_rankmap_data_append = self.merge_scores_ranked(
                 df_rankmap_data, df_scores)
+            # プレイリストディレクトリのプレイリストファイルをクリーンアップします
             self.clean_playlist_json(self.playlist_path, self.playlist_dir)
+            # プレイリストを作成します
             self.create_playlist_json(df_rankmap_data_append, self.config)
+            # プレイリストをプレイリストディレクトリに配置します
             self.copy_to_playlist(self.playlist_path, self.playlist_dir)
         except:
             self.logger.error("Error is occur.", exc_info=True)
@@ -569,6 +593,8 @@ class MyBSList:
         ), on=["Hash", "Difficulty"], how="left", suffixes=("", "_y"))[cols_playlist]
         _df_rankmap_data_append = _df_rankmap_data_append[[
             x for x in _df_rankmap_data_append.columns if not x.endswith("_y")]]
+
+        # _df_rankmap_data_append.to_csv('_df_rankmap_data_append.csv')
         self.logger.info('Merge complete. Count:{:,}'.format(
             len(_df_rankmap_data_append)))
         return _df_rankmap_data_append
@@ -623,7 +649,8 @@ class MyBSList:
             if nf_is_enable:
                 _df_not_cleaed_playlist = _df_not_cleaed_playlist.append(_df_rankmap_data_append[(1 == 1)
                                                                                                  & (_df_rankmap_data_append["Level"] == level_i)
-                                                                                                 & (_df_rankmap_data_append['Modifiers'] == 'NF')
+                                                                                                #  & (_df_rankmap_data_append['Modifiers'] == 'NF')
+                                                                                                 & (_df_rankmap_data_append['Modifiers'].str.contains('NF'))
                                                                                                  ])
 
             if filtered_is_enable or not_fc_is_enable:
@@ -643,7 +670,8 @@ class MyBSList:
                                                               & (_df_rankmap_data_append["Rank"] <= filtered_rank_max)
                                                               & (_df_rankmap_data_append["Miss"] + _df_rankmap_data_append["Bad"] >= filtered_miss_min)
                                                               & (_df_rankmap_data_append["Miss"] + _df_rankmap_data_append["Bad"] <= filtered_miss_max)
-                                                              & (_df_rankmap_data_append['Modifiers'] != 'NF')
+                                                            #   & (_df_rankmap_data_append['Modifiers'] != 'NF')
+                                                              & (~_df_rankmap_data_append['Modifiers'].str.contains('NF', na=False)) # ~ 演算子は、ビット単位で NOT 演算を実行
                                                               ]
 
             # Not FC
@@ -694,7 +722,7 @@ class MyBSList:
         return
 
     def create_playlist_json(self, _df_rankmap_data_append, _config):
-        """ jsonのsettinファイルを用いてPlaylistを作成
+        """ jsonのsettingファイルを用いてPlaylistを作成
         """
         self.logger.info('<<Playlist creation in working directory start.>>')
 
@@ -710,34 +738,43 @@ class MyBSList:
         list_configs = json.load(json_open)
 
         for config in list_configs:
-            playlist_is_enable = strtobool(
-                config['playlist_is_enable'])
-            not_play_is_enable = strtobool(
-                config['not_play_is_enable'])
-            nf_is_enable = strtobool(config['nf_is_enable'])
-            not_fc_is_enable = strtobool(config['not_fc_is_enable'])
-            scorefilter_is_enable = strtobool(
-                config['scorefilter_is_enable'])
-            star_min = (config['star_min'])
-            star_max = (config['star_max'])
-            nps_min = (config['nps_min'])
-            nps_max = (config['nps_max'])
-            duration_min = (config['duration_min'])
-            duration_max = (config['duration_max'])
-            scorefilter_pp_min = (config['scorefilter_pp_min'])
-            scorefilter_pp_max = (config['scorefilter_pp_max'])
-            scorefilter_acc_min = (config['scorefilter_acc_min'])
-            scorefilter_acc_max = (config['scorefilter_acc_max'])
-            scorefilter_miss_min = (config['scorefilter_miss_min'])
-            scorefilter_miss_max = (config['scorefilter_miss_max'])
-            scorefilter_rank_min = (config['scorefilter_rank_min'])
-            scorefilter_rank_max = (config['scorefilter_rank_max'])
+            # 値が存在しない場合のデフォルト値を追加
+            playlist_is_enable = strtobool(config.get('playlist_is_enable', 'False'))
+            not_play_is_enable = strtobool(config.get('not_play_is_enable', 'False'))
+            nf_is_enable = strtobool(config.get('nf_is_enable', 'False'))
+            not_fc_is_enable = strtobool(config.get('not_fc_is_enable', 'False'))
+            scorefilter_is_enable = strtobool(config.get('scorefilter_is_enable', 'False'))
+
+            star_min = config.get('star_min', 0)
+            star_max = config.get('star_max', 13)
+            nps_min = config.get('nps_min', 0)
+            nps_max = config.get('nps_max', 20)
+            njs_min = config.get('njs_min', 0)
+            njs_max = config.get('njs_max', 30)
+            duration_min = config.get('duration_min', 0)
+            duration_max = config.get('duration_max', 1000)
+            notes_min = config.get('notes_min', 0)
+            notes_max = config.get('notes_max', 10000)
+            bombs_min = config.get('bombs_min', 0)
+            bombs_max = config.get('bombs_max', 10000)
+            obstacles_min = config.get('obstacles_min', 0)
+            obstacles_max = config.get('obstacles_max', 10000)
+            scorefilter_pp_min = config.get('scorefilter_pp_min', 0)
+            scorefilter_pp_max = config.get('scorefilter_pp_max', 1000)
+            scorefilter_acc_min = config.get('scorefilter_acc_min', 0)
+            scorefilter_acc_max = config.get('scorefilter_acc_max', 100)
+            scorefilter_miss_min = config.get('scorefilter_miss_min', 0)
+            scorefilter_miss_max = config.get('scorefilter_miss_max', 1000)
+            scorefilter_rank_min = config.get('scorefilter_rank_min', 0)
+            scorefilter_rank_max = config.get('scorefilter_rank_max', 10000)
+            scorefilter_days_min = config.get('scorefilter_days_min', 0)
+            scorefilter_days_max = config.get('scorefilter_days_max', 10000)
 
             if not playlist_is_enable:
                 continue
-
-            df_playlist = _df_rankmap_data_append.head(0)
-            _df_not_cleared_playlist = _df_rankmap_data_append.head(0)
+            
+            df_playlist = pd.DataFrame(columns=_df_rankmap_data_append.columns)
+            _df_not_cleared_playlist = pd.DataFrame(columns=_df_rankmap_data_append.columns)
             _df_filtered_playlist = _df_rankmap_data_append
 
             # not played
@@ -747,10 +784,19 @@ class MyBSList:
                                                                                                    & (_df_rankmap_data_append["Stars"] < star_max)
                                                                                                    & (_df_rankmap_data_append["Nps"] >= nps_min)
                                                                                                    & (_df_rankmap_data_append["Nps"] < nps_max)
+                                                                                                   & (_df_rankmap_data_append["Njs"] >= njs_min)
+                                                                                                   & (_df_rankmap_data_append["Njs"] < njs_max)
                                                                                                    & (_df_rankmap_data_append["Duration"] >= duration_min)
                                                                                                    & (_df_rankmap_data_append["Duration"] < duration_max)
+                                                                                                   & (_df_rankmap_data_append["Notes"] >= notes_min)
+                                                                                                   & (_df_rankmap_data_append["Notes"] < notes_max)
+                                                                                                   & (_df_rankmap_data_append["Bombs"] >= bombs_min)
+                                                                                                   & (_df_rankmap_data_append["Bombs"] < bombs_max)
+                                                                                                   & (_df_rankmap_data_append["Obstacles"] >= obstacles_min)
+                                                                                                   & (_df_rankmap_data_append["Obstacles"] < obstacles_max)
                                                                                                    & (_df_rankmap_data_append['Score'].isnull())
                                                                                                    ])
+                
 
             # NF
             if nf_is_enable:
@@ -759,9 +805,17 @@ class MyBSList:
                                                                                                    & (_df_rankmap_data_append["Stars"] < star_max)
                                                                                                    & (_df_rankmap_data_append["Nps"] >= nps_min)
                                                                                                    & (_df_rankmap_data_append["Nps"] < nps_max)
+                                                                                                   & (_df_rankmap_data_append["Njs"] >= njs_min)
+                                                                                                   & (_df_rankmap_data_append["Njs"] < njs_max)
                                                                                                    & (_df_rankmap_data_append["Duration"] >= duration_min)
                                                                                                    & (_df_rankmap_data_append["Duration"] < duration_max)
-                                                                                                   & (_df_rankmap_data_append['Modifiers'] == 'NF')
+                                                                                                   & (_df_rankmap_data_append["Notes"] >= notes_min)
+                                                                                                   & (_df_rankmap_data_append["Notes"] < notes_max)
+                                                                                                   & (_df_rankmap_data_append["Bombs"] >= bombs_min)
+                                                                                                   & (_df_rankmap_data_append["Bombs"] < bombs_max)
+                                                                                                   & (_df_rankmap_data_append["Obstacles"] >= obstacles_min)
+                                                                                                   & (_df_rankmap_data_append["Obstacles"] < obstacles_max)
+                                                                                                   & (_df_rankmap_data_append['Modifiers'].str.contains('NF'))
                                                                                                    ])
 
             if scorefilter_is_enable or not_fc_is_enable:
@@ -775,8 +829,16 @@ class MyBSList:
                                                           & (_df_rankmap_data_append["Stars"] < star_max)
                                                           & (_df_rankmap_data_append["Nps"] >= nps_min)
                                                           & (_df_rankmap_data_append["Nps"] < nps_max)
+                                                          & (_df_rankmap_data_append["Njs"] >= njs_min)
+                                                          & (_df_rankmap_data_append["Njs"] < njs_max)
                                                           & (_df_rankmap_data_append["Duration"] >= duration_min)
                                                           & (_df_rankmap_data_append["Duration"] < duration_max)
+                                                          & (_df_rankmap_data_append["Notes"] >= notes_min)
+                                                          & (_df_rankmap_data_append["Notes"] < notes_max)
+                                                          & (_df_rankmap_data_append["Bombs"] >= bombs_min)
+                                                          & (_df_rankmap_data_append["Bombs"] < bombs_max)
+                                                          & (_df_rankmap_data_append["Obstacles"] >= obstacles_min)
+                                                          & (_df_rankmap_data_append["Obstacles"] < obstacles_max)
                                                           ]
 
             # ScoreFiltered
@@ -790,8 +852,11 @@ class MyBSList:
                                                               & (_df_rankmap_data_append["Rank"] < scorefilter_rank_max)
                                                               & (_df_rankmap_data_append["Miss"] + _df_rankmap_data_append["Bad"] >= scorefilter_miss_min)
                                                               & (_df_rankmap_data_append["Miss"] + _df_rankmap_data_append["Bad"] < scorefilter_miss_max)
-                                                              & (_df_rankmap_data_append['Modifiers'] != 'NF')
+                                                              & (_df_rankmap_data_append["Days"] >= scorefilter_days_min)
+                                                              & (_df_rankmap_data_append["Days"] < scorefilter_days_max)
+                                                              & (~_df_rankmap_data_append['Modifiers'].str.contains('NF', na=False)) # ~ 演算子は、ビット単位で NOT 演算を実行
                                                               ]
+
 
             if not_fc_is_enable:
                 _df_filtered_playlist = _df_filtered_playlist[(1 == 1)
@@ -886,7 +951,7 @@ class MyBSList:
         return
 
     def copy_to_playlist(self, input_dir, playlist_dir):
-        """ 解凍したranked_all をplaylistフォルダに展開し上書きします。
+        """  作成したプレイリストをplaylistフォルダに展開し上書きします。
         """
         self.logger.info(
             "Copy and paste the playlists into the playlists directory.")
@@ -914,13 +979,62 @@ class MyBSList:
             return "-"
 
 
-def main():
-    # configの取得
-    config = configparser.ConfigParser()
-    config.read('config.ini', encoding='utf-8')
-    mybstasks = MyBSList(config)
-    mybstasks.process()
+# def main():
+#     # configの取得
+#     config = configparser.ConfigParser()
+#     config.read('config.ini', encoding='utf-8')
+#     mybstasks = MyBSList(config)
+#     mybstasks.process()
 
+
+
+import os
+import shutil
+import configparser
+import tkinter as tk
+from tkinter import messagebox
+
+# def main():
+#     # Check if config.ini exists
+#     if not os.path.exists('config.ini'):
+#         if os.path.exists('config_sample.ini'):
+#             shutil.copy('config_sample.ini', 'config.ini')
+#             print("config.ini not found. A new config.ini has been created based on config_sample.ini.")
+#             print("Please edit config.ini with your settings and restart the program.")
+#             return
+#         else:
+#             print("config.ini and config_sample.ini not found. Please create a config.ini file.")
+#             return
+#     else:
+#         # configの取得
+#         config = configparser.ConfigParser()
+#         config.read('config.ini', encoding='utf-8')
+#         mybstasks = MyBSList(config)
+#         mybstasks.process()
+        
+def main():
+    # Check if config.ini exists
+    if not os.path.exists('config.ini'):
+        if os.path.exists('config_sample.ini'):
+            shutil.copy('config_sample.ini', 'config.ini')
+            show_warning("config.ini not found. A new config.ini has been created based on config_sample.ini.\nPlease edit config.ini with your settings and restart the program.")
+            return
+        else:
+            show_warning("config.ini and config_sample.ini not found. Please create a config.ini file.")
+            return
+
+    else:
+        # configの取得
+        config = configparser.ConfigParser()
+        config.read('config.ini', encoding='utf-8')
+        mybstasks = MyBSList(config)
+        mybstasks.process()
+
+def show_warning(message):
+    root = tk.Tk()
+    root.withdraw()
+    messagebox.showwarning("Warning", message)
+    root.destroy()
 
 if __name__ == '__main__':
     main()
