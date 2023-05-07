@@ -26,7 +26,7 @@ Download the latest zip file from [release](https://github.com/hatopopvr/MyBSLis
 
 ## Update
 
-Overwrite the `MyBSList` directory. If it does not work, delete the work and log directories and then run `MyBSList.exe`.
+Overwrite the `MyBSList` directory. If it does not work, delete the `work` and `log` directories and then run `MyBSList.exe`.
 
 ## How to use
 
