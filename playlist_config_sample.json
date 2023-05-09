@@ -36,8 +36,8 @@
         "list_name": "old_6Months",
         "image_path": "images/img_old.png",
         "playlist_is_enable": "True",
-        "not_play_is_enable": "True",
-        "nf_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "False",
         "not_fc_is_enable": "False",
         "scorefilter_is_enable": "True",
         "star_min": 0,
@@ -49,8 +49,8 @@
         "list_name": "old_1Year",
         "image_path": "images/img_old_green.png",
         "playlist_is_enable": "True",
-        "not_play_is_enable": "True",
-        "nf_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "False",
         "not_fc_is_enable": "False",
         "scorefilter_is_enable": "True",
         "star_min": 0,
@@ -62,8 +62,8 @@
         "list_name": "old_500Days",
         "image_path": "images/img_old_yellow.png",
         "playlist_is_enable": "True",
-        "not_play_is_enable": "True",
-        "nf_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "False",
         "not_fc_is_enable": "False",
         "scorefilter_is_enable": "True",
         "star_min": 0,
@@ -75,8 +75,8 @@
         "list_name": "old_2Years",
         "image_path": "images/img_old_pink.png",
         "playlist_is_enable": "True",
-        "not_play_is_enable": "True",
-        "nf_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "False",
         "not_fc_is_enable": "False",
         "scorefilter_is_enable": "True",
         "star_min": 0,
@@ -87,15 +87,26 @@
     {
         "list_name": "old_1000Days",
         "image_path": "images/img_old_red.png",
-        "playlist_is_enable": "True",
+        "playlist_is_enable": "False",
         "not_play_is_enable": "True",
-        "nf_is_enable": "True",
+        "nf_is_enable": "False",
         "not_fc_is_enable": "False",
         "scorefilter_is_enable": "True",
         "star_min": 0,
         "star_max": 13,
         "scorefilter_days_min": 1000,
         "scorefilter_days_max": 10000
+    },
+    {
+        "list_name": "NFs",
+        "image_path": "images/img_nf_red.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 0,
+        "star_max": 13
     },
     {
         "list_name": "bombs",
@@ -186,6 +197,19 @@
         "scorefilter_acc_max": 97
     },
     {
+        "list_name": "star01_old",
+        "image_path": "images/img_star_gray_01.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 1,
+        "star_max": 2,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
+    },
+    {
         "list_name": "star02",
         "image_path": "images/img_star_02.png",
         "playlist_is_enable": "True",
@@ -231,6 +255,19 @@
         "scorefilter_acc_max": 96
     },
     {
+        "list_name": "star02_old",
+        "image_path": "images/img_star_gray_02.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 2,
+        "star_max": 3,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
+    },
+    {
         "list_name": "star03",
         "image_path": "images/img_star_03.png",
         "playlist_is_enable": "True",
@@ -274,6 +311,19 @@
         "scorefilter_acc_max": 94
     },
     {
+        "list_name": "star03_old",
+        "image_path": "images/img_star_gray_03.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 3,
+        "star_max": 4,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
+    },
+    {
         "list_name": "star04",
         "image_path": "images/img_star_04.png",
         "playlist_is_enable": "True",
@@ -313,6 +363,19 @@
         "scorefilter_acc_max": 92
     },
     {
+        "list_name": "star04_old",
+        "image_path": "images/img_star_gray_04.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 4,
+        "star_max": 5,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
+    },
+    {
         "list_name": "star05",
         "image_path": "images/img_star_05.png",
         "playlist_is_enable": "True",
@@ -350,6 +413,19 @@
         "star_max": 6,
         "scorefilter_acc_min": 0,
         "scorefilter_acc_max": 91
+    },
+    {
+        "list_name": "star05_old",
+        "image_path": "images/img_star_gray_05.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 5,
+        "star_max": 6,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
     },
     {
         "list_name": "star06",
@@ -404,6 +480,19 @@
         "star_max": 7,
         "scorefilter_acc_min": 0,
         "scorefilter_acc_max": 92
+    },
+    {
+        "list_name": "star06_old",
+        "image_path": "images/img_star_gray_06.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 6,
+        "star_max": 7,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
     },
     {
         "list_name": "star07_85",
@@ -473,6 +562,19 @@
         "scorefilter_miss_max": 10000
     },
     {
+        "list_name": "star07_old",
+        "image_path": "images/img_star_gray_07.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 7,
+        "star_max": 8,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
+    },
+    {
         "list_name": "star08_80",
         "image_path": "images/img_star_yellow_08.png",
         "playlist_is_enable": "True",
@@ -529,6 +631,19 @@
         "scorefilter_miss_max": 10000
     },
     {
+        "list_name": "star08_old",
+        "image_path": "images/img_star_gray_08.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 8,
+        "star_max": 9,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
+    },
+    {
         "list_name": "star09_not_play",
         "image_path": "images/img_star_red_09.png",
         "playlist_is_enable": "True",
@@ -581,15 +696,17 @@
         "scorefilter_acc_max": 70
     },
     {
-        "list_name": "star09_2",
-        "image_path": "images/img_star_aqua_09.png",
+        "list_name": "star09_old",
+        "image_path": "images/img_star_gray_09.png",
         "playlist_is_enable": "True",
-        "not_play_is_enable": "True",
+        "not_play_is_enable": "False",
         "nf_is_enable": "True",
         "not_fc_is_enable": "False",
-        "scorefilter_is_enable": "True",
+        "scorefilter_is_enable": "False",
         "star_min": 9,
-        "star_max": 9.2
+        "star_max": 10,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
     },
     {
         "list_name": "star10",
@@ -605,7 +722,20 @@
         "scorefilter_acc_max": 80
     },
     {
-        "list_name": "star10",
+        "list_name": "star10_old",
+        "image_path": "images/img_star_gray_10.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 10,
+        "star_max": 11,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
+    },
+    {
+        "list_name": "star10_70",
         "image_path": "images/img_star_yellow_10.png",
         "playlist_is_enable": "True",
         "not_play_is_enable": "True",
@@ -657,6 +787,19 @@
         "scorefilter_acc_max": 80
     },
     {
+        "list_name": "star11_old",
+        "image_path": "images/img_star_gray_11.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 11,
+        "star_max": 12,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
+    },
+    {
         "list_name": "star12",
         "image_path": "images/img_star_12.png",
         "playlist_is_enable": "True",
@@ -681,5 +824,18 @@
         "star_max": 13,
         "scorefilter_acc_min": 0,
         "scorefilter_acc_max": 80
+    },
+    {
+        "list_name": "star12_old",
+        "image_path": "images/img_star_gray_12.png",
+        "playlist_is_enable": "True",
+        "not_play_is_enable": "False",
+        "nf_is_enable": "True",
+        "not_fc_is_enable": "False",
+        "scorefilter_is_enable": "False",
+        "star_min": 12,
+        "star_max": 13,
+        "scorefilter_days_min": 365,
+        "scorefilter_days_max": 10000
     }
 ]

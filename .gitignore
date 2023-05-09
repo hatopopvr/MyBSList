@@ -4,8 +4,11 @@ work/
 env/
 build/
 dist/
+release/
 Build.bat
 Release.bat
+config.ini
+playlist_config.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
